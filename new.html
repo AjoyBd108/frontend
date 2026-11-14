@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>LearnBee — Mobile Learning App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- SECTION: STYLES -->
+  <style>
+    :root {
+      --bg-top: #fbf6eb;
+      --bg-mid: #faecd1;
+      --bg-bot: #f6d59a;
+      --ink: #1a1b22;
+      --muted: #5a5d6c;
+      --line: #3e4152;
+      --primary: #5b4df0;
+      --primary-dark: #4336c9;
+      --danger: #dc2626;
+      --nav-bg: #d9e4cb;
+      --class-color: #5b4df0;
+      --class-soft: #eef0ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--ink);
+      background: #efe7d6;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100dvh;
+      background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 62%, var(--bg-bot) 100%);
+      position: relative;
+      overflow-x: hidden;
+      padding-bottom: 92px;
+      box-shadow: 0 0 36px rgba(30, 24, 14, 0.12);
+    }
+
+    /* Render 30s wake timer */
+    #wakeBanner {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 440px;
+      z-index: 60;
+      background: #fef3c7;
+      color: #92400e;
+      border-bottom: 1px solid #fde68a;
+      text-align: center;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .view {
+      display: none;
+      position: relative;
+      z-index: 2;
+      padding: 16px 16px 20px;
+    }
+    .view.active { display: block; }
+
+    /* Lock Home to one screen with no scroll */
+    #viewHome.active {
+      height: 100dvh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: clamp(10px, 2vh, 18px) 16px clamp(82px, 11vh, 94px);
+    }
+
+    .home-content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Decorative background art for home */
+    .home-art {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .art-item {
+      position: absolute;
+      display: block;
+    }
+
+    /* Home Header */
+    .home-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      padding-top: 2px;
+    }
+
+    .welcome-small {
+      font-size: clamp(12px, 3.2vw, 14px);
+      font-weight: 800;
+      margin-bottom: 6px;
+      padding-left: 38px;
+    }
+
+    .hello-title {
+      font-family: 'Lora', serif;
+      font-size: clamp(26px, 7.2vw, 33px);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+    }
+
+    .mascot-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+      flex-shrink: 0;
+      margin-top: -2px;
+    }
+
+    .mascot-avatar {
+      width: clamp(58px, 15vw, 68px);
+      height: clamp(46px, 12vw, 54px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mascot-name {
+      font-family: 'Lora', serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+      text-transform: uppercase;
+    }
+
+    /* Gingham Learning Space Card */
+    .space-card-wrap {
+      position: relative;
+      margin: 4px 12px;
+    }
+
+    .space-card {
+      background-color: #fffef6;
+      background-image:
+        linear-gradient(90deg, rgba(246, 227, 179, 0.5) 50%, transparent 50%),
+        linear-gradient(rgba(246, 227, 179, 0.5) 50%, transparent 50%);
+      background-size: 20px 20px;
+      border: 1.8px solid #484a59;
+      border-radius: 22px;
+      padding: clamp(12px, 2vh, 18px) 22px;
+      position: relative;
+      outline: 1.5px solid rgba(72, 74, 89, 0.35);
+      outline-offset: -5px;
+    }
+
+    .bow-top, .bow-bot {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 4;
+      pointer-events: none;
+      line-height: 0;
+    }
+    .bow-top { top: -15px; }
+    .bow-bot { bottom: -15px; }
+
+    .corner-flower {
+      position: absolute;
+      z-index: 4;
+      pointer-events: none;
+      line-height: 0;
+    }
+
+    .space-label {
+      font-size: clamp(12px, 3.2vw, 14px);
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .space-class {
+      font-size: clamp(20px, 5.4vw, 24px);
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      margin-bottom: 4px;
+    }
+
+    .space-sub {
+      font-size: clamp(11px, 3vw, 13px);
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .section-heading {
+      font-size: clamp(19px, 5.3vw, 23px);
+      font-weight: 800;
+      margin: 2px 0 6px;
+      letter-spacing: -0.01em;
+    }
+
+    /* 2x2 Notebook Grid Cards */
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(12px, 2vh, 18px) 16px;
+      padding: 0 4px;
+    }
+
+    .note-card {
+      position: relative;
+      background-color: #f3f7fd;
+      background-image:
+        linear-gradient(to right, rgba(164, 193, 227, 0.45) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(164, 193, 227, 0.45) 1px, transparent 1px);
+      background-size: 14px 14px;
+      border: 1.8px solid #484a59;
+      border-radius: 16px;
+      padding: clamp(12px, 2vh, 18px) 8px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: clamp(112px, 16.5vh, 140px);
+      outline: 1.4px solid rgba(72, 74, 89, 0.32);
+      outline-offset: -4px;
+      transition: transform 0.14s ease;
+    }
+
+    .note-card:active {
+      transform: scale(0.97);
+    }
+
+    .note-icon {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 6px;
+    }
+
+    .note-title {
+      font-size: clamp(12px, 3.2vw, 13px);
+      font-weight: 800;
+      margin-bottom: 3px;
+      color: var(--ink);
+    }
+
+    .note-desc {
+      font-size: clamp(10px, 2.7vw, 11px);
+      font-weight: 600;
+      color: #363846;
+      line-height: 1.25;
+      max-width: 122px;
+    }
+
+    .doodle-tl { position: absolute; top: -12px; left: -8px; pointer-events: none; line-height: 0; z-index: 3; }
+    .doodle-tr { position: absolute; top: -11px; right: -7px; pointer-events: none; line-height: 0; z-index: 3; }
+    .doodle-bl { position: absolute; bottom: -10px; left: -7px; pointer-events: none; line-height: 0; z-index: 3; }
+    .doodle-br { position: absolute; bottom: -11px; right: -7px; pointer-events: none; line-height: 0; z-index: 3; }
+
+    .explore-trigger {
+      background: transparent;
+      border: none;
+      padding: 4px 0 0;
+      text-align: left;
+      font-family: inherit;
+      font-size: clamp(19px, 5.2vw, 23px);
+      font-weight: 800;
+      color: var(--ink);
+      cursor: pointer;
+      letter-spacing: -0.01em;
+    }
+
+    /* Explore Learning Section */
+    .explore-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .soft-card {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1.5px solid rgba(62, 65, 82, 0.22);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: 0 4px 12px rgba(30, 36, 51, 0.05);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      background: #eef0ff;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    /* Buttons & Inputs */
+    .btn {
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-outline { background: #fff; border-color: #cbd5e1; color: var(--ink); }
+    .btn-danger { background: #fee2e2; color: var(--danger); }
+
+    .input {
+      width: 100%;
+      padding: 11px 13px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 14px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+    .input:focus { border-color: var(--primary); }
+
+    .form-group { margin-bottom: 12px; }
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    /* Learning Sub-Tabs (AI Tutor & Olympiad Hub) */
+    .seg-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.72);
+      padding: 5px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(62, 65, 82, 0.16);
+      margin-bottom: 14px;
+    }
+
+    .seg-btn {
+      border: none;
+      background: transparent;
+      padding: 9px 10px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .seg-btn.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* AI Tutor Chat */
+    .tutor-box {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1.5px solid rgba(62, 65, 82, 0.22);
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 220px);
+      min-height: 400px;
+      overflow: hidden;
+    }
+
+    .tutor-head {
+      padding: 12px 14px;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tutor-feed {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #f8fafd;
+    }
+
+    .bubble {
+      max-width: 86%;
+      padding: 11px 13px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .bubble.ai {
+      align-self: flex-start;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+    }
+
+    .bubble.student {
+      align-self: flex-end;
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .bubble img {
+      max-width: 190px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .tutor-preview {
+      display: none;
+      padding: 8px 12px;
+      background: #eef0ff;
+      border-top: 1px solid #dbe4ff;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .tutor-preview img {
+      width: 38px;
+      height: 38px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .tutor-bar {
+      padding: 10px;
+      border-top: 1px solid #e2e8f0;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .plus-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid #cbd5e1;
+      background: #f3f5fb;
+      color: var(--primary);
+      font-size: 20px;
+      font-weight: 800;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* Olympiad Filter Pills */
+    .filter-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .pill {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .pill.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* Class Community Chat */
+    .class-banner {
+      background: var(--class-soft);
+      border: 2px solid var(--class-color);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .chat-box {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1.5px solid rgba(62, 65, 82, 0.22);
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 300px);
+      min-height: 340px;
+      overflow: hidden;
+    }
+
+    .chat-head {
+      padding: 11px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .chat-feed {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #fafbfe;
+    }
+
+    .msg-row {
+      display: flex;
+      gap: 10px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 9px 11px;
+    }
+
+    .msg-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--class-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .msg-meta {
+      font-size: 11px;
+      margin-bottom: 2px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .msg-author { font-weight: 800; color: var(--class-color); }
+    .msg-school { color: var(--muted); }
+
+    .chat-compose {
+      padding: 10px;
+      border-top: 1px solid #e2e8f0;
+      background: #fff;
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Bottom Floating Navigation Bar */
+    .bottom-nav-wrap {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 28px);
+      max-width: 432px;
+      z-index: 50;
+    }
+
+    .bottom-nav {
+      background: var(--nav-bg);
+      border-radius: 20px;
+      padding: 8px 10px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      box-shadow: 0 6px 20px rgba(34, 42, 24, 0.14);
+      border: 1px solid rgba(110, 128, 92, 0.25);
+    }
+
+    .bnav-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 5px 4px;
+      border-radius: 14px;
+      color: #2b3026;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .bnav-btn.active {
+      background: rgba(255, 255, 255, 0.65);
+      color: var(--ink);
+    }
+
+    .bnav-ico {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Modal */
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.62);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .modal {
+      background: #fff;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 400px;
+      padding: 22px;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      border: none;
+      background: #f1f5f9;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .error-text {
+      color: var(--danger);
+      font-size: 12px;
+      min-height: 16px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- SECTION: RENDER 30S TIMER BANNER -->
+    <div id="wakeBanner">
+      Waking up LearnBee server (<span id="wakeSeconds">30</span>s)...
+    </div>
+
+    <!-- SECTION: HOME VIEW -->
+    <main id="viewHome" class="view active">
+      <!-- Custom pastel SVG background doodles -->
+      <div class="home-art" aria-hidden="true">
+        <!-- Hanging vines top-left -->
+        <svg class="art-item" style="top: -4px; left: 2px;" width="72" height="145" viewBox="0 0 72 145" fill="none">
+          <path d="M14 0 C12 40, 18 85, 14 135" stroke="#b9a999" stroke-width="1.6"/>
+          <path d="M44 0 C48 28, 42 56, 46 82" stroke="#c3b4a4" stroke-width="1.4"/>
+          <ellipse cx="9" cy="24" rx="5" ry="3" transform="rotate(-25 9 24)" fill="#d6c5b5"/>
+          <ellipse cx="20" cy="36" rx="5" ry="3" transform="rotate(20 20 36)" fill="#cbb9a7"/>
+          <ellipse cx="9" cy="54" rx="5" ry="3" transform="rotate(-25 9 54)" fill="#d6c5b5"/>
+          <ellipse cx="20" cy="70" rx="5" ry="3" transform="rotate(20 20 70)" fill="#cbb9a7"/>
+          <ellipse cx="9" cy="92" rx="5" ry="3" transform="rotate(-25 9 92)" fill="#d6c5b5"/>
+          <ellipse cx="19" cy="112" rx="5" ry="3" transform="rotate(20 19 112)" fill="#cbb9a7"/>
+          <ellipse cx="40" cy="22" rx="4.5" ry="2.8" transform="rotate(-20 40 22)" fill="#d8c8b8"/>
+          <ellipse cx="50" cy="38" rx="4.5" ry="2.8" transform="rotate(25 50 38)" fill="#cebeae"/>
+          <ellipse cx="40" cy="56" rx="4.5" ry="2.8" transform="rotate(-20 40 56)" fill="#d8c8b8"/>
+        </svg>
+
+        <!-- Soft pink butterfly top -->
+        <svg class="art-item" style="top: 12px; left: 36%; opacity: 0.7;" width="34" height="28" viewBox="0 0 34 28" fill="none">
+          <ellipse cx="11" cy="11" rx="8" ry="6" transform="rotate(-22 11 11)" fill="#f8cfd7"/>
+          <ellipse cx="23" cy="11" rx="8" ry="6" transform="rotate(22 23 11)" fill="#f8cfd7"/>
+          <ellipse cx="12" cy="19" rx="5" ry="4" transform="rotate(18 12 19)" fill="#fadbe1"/>
+          <ellipse cx="22" cy="19" rx="5" ry="4" transform="rotate(-18 22 19)" fill="#fadbe1"/>
+          <rect x="16" y="7" width="2" height="14" rx="1" fill="#e598a6"/>
+        </svg>
+
+        <!-- Watercolor red mushroom top -->
+        <svg class="art-item" style="top: 40px; left: 48%;" width="72" height="58" viewBox="0 0 72 58" fill="none">
+          <path d="M27 32 C26 44, 24 50, 32 50 C40 50, 38 44, 37 32 Z" fill="#fff6eb"/>
+          <path d="M8 31 C11 10, 53 10, 56 31 C45 35, 19 35, 8 31 Z" fill="#df5b5b"/>
+          <circle cx="22" cy="22" r="3.5" fill="#fff7ee"/>
+          <circle cx="35" cy="17" r="2.8" fill="#fff7ee"/>
+          <circle cx="44" cy="24" r="3" fill="#fff7ee"/>
+          <circle cx="29" cy="28" r="2.2" fill="#fff7ee"/>
+          <path d="M51 45 C52 38, 63 38, 64 45 Z" fill="#e57676"/>
+          <rect x="55" y="45" width="4" height="6" rx="2" fill="#fff5ea"/>
+        </svg>
+
+        <!-- Cherries right -->
+        <svg class="art-item" style="top: 175px; right: -6px;" width="86" height="82" viewBox="0 0 86 82" fill="none">
+          <path d="M28 52 C34 30, 50 18, 62 12" stroke="#8fb379" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M68 54 C68 35, 65 20, 62 12" stroke="#8fb379" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M62 12 C50 8, 44 16, 48 22 C54 24, 61 18, 62 12 Z" fill="#a5c68f"/>
+          <circle cx="26" cy="58" r="15" fill="#c94b5b"/>
+          <circle cx="21" cy="53" r="3" fill="#eea3ac" opacity="0.7"/>
+          <circle cx="66" cy="60" r="15" fill="#c94b5b"/>
+          <circle cx="61" cy="55" r="3" fill="#eea3ac" opacity="0.7"/>
+        </svg>
+
+        <!-- Peeking purple star left -->
+        <svg class="art-item" style="top: 258px; left: -24px;" width="62" height="62" viewBox="0 0 62 62" fill="none">
+          <path d="M31 4 L39 20 L57 23 L44 36 L47 54 L31 45 L15 54 L18 36 L5 23 L23 20 Z" fill="#cebbf2" stroke="#484a59" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="35" cy="29" r="2" fill="#3a3b47"/>
+          <circle cx="43" cy="29" r="2" fill="#3a3b47"/>
+          <path d="M37 34 Q39 36 41 34" stroke="#3a3b47" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+
+        <!-- Pink notebook right -->
+        <svg class="art-item" style="top: 325px; right: -10px;" width="58" height="62" viewBox="0 0 58 62" fill="none">
+          <g transform="rotate(-14 29 31)">
+            <rect x="10" y="8" width="38" height="46" rx="5" fill="#f3c7ce" stroke="#7d5f66" stroke-width="1.8"/>
+            <rect x="14" y="12" width="30" height="38" rx="3" fill="#f8d8dd"/>
+            <path d="M10 14 H16 M10 24 H16 M10 34 H16 M10 44 H16" stroke="#7d5f66" stroke-width="1.6" stroke-linecap="round"/>
+            <rect x="20" y="18" width="18" height="8" rx="2" fill="#fff7f8"/>
+          </g>
+        </svg>
+
+        <!-- Pastel star bottom-right -->
+        <svg class="art-item" style="top: 472px; right: -6px;" width="68" height="68" viewBox="0 0 68 68" fill="none">
+          <path d="M34 6 L42 23 L60 25 L47 38 L50 56 L34 47 L18 56 L21 38 L8 25 L26 23 Z" fill="#fde3cc" stroke="#997f72" stroke-width="1.8" stroke-linejoin="round"/>
+          <circle cx="29" cy="31" r="1.8" fill="#6b564d"/>
+          <circle cx="39" cy="31" r="1.8" fill="#6b564d"/>
+          <ellipse cx="26" cy="35" rx="2.5" ry="1.4" fill="#f7b3b3"/>
+          <ellipse cx="42" cy="35" rx="2.5" ry="1.4" fill="#f7b3b3"/>
+        </svg>
+
+        <!-- Rainbow shooting star bottom-left -->
+        <svg class="art-item" style="bottom: 108px; left: -12px;" width="86" height="58" viewBox="0 0 86 58" fill="none">
+          <path d="M2 52 Q24 34 52 28" stroke="#f2a7b8" stroke-width="5" stroke-linecap="round"/>
+          <path d="M5 56 Q27 38 54 32" stroke="#f9df8e" stroke-width="4" stroke-linecap="round"/>
+          <path d="M8 59 Q30 42 56 36" stroke="#b6dcfa" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M56 12 L61 22 L72 24 L64 31 L66 42 L56 37 L46 42 L48 31 L40 24 L51 22 Z" fill="#f7eb99" stroke="#70694f" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <div class="home-content">
+        <!-- Top Greeting + Mascot -->
+        <div class="home-top">
+          <div>
+            <div class="welcome-small" id="welcomeLabel">Welcome</div>
+            <h1 class="hello-title" id="helloName">Hello, Friend!</h1>
+          </div>
+          <button class="mascot-btn" onclick="switchView('profile')" title="Open Profile">
+            <div class="mascot-avatar" id="homeAvatarEmoji">
+              <svg width="62" height="50" viewBox="0 0 64 52" fill="none">
+                <path d="M12 34 C8 20, 20 8, 36 8 C52 8, 58 22, 54 34 C50 42, 16 42, 12 34 Z" fill="#a87c64" stroke="#484a59" stroke-width="2"/>
+                <path d="M12 34 C14 22, 26 16, 38 22 C44 25, 48 32, 46 39 C38 43, 18 43, 12 34 Z" fill="#f9ead8" stroke="#484a59" stroke-width="1.8"/>
+                <circle cx="24" cy="27" r="2.2" fill="#2d2e38"/>
+                <circle cx="35" cy="27" r="2.2" fill="#2d2e38"/>
+                <ellipse cx="29.5" cy="31" rx="2.5" ry="1.8" fill="#484a59"/>
+                <ellipse cx="20" cy="31" rx="3" ry="1.6" fill="#f3b2b2"/>
+                <ellipse cx="39" cy="31" rx="3" ry="1.6" fill="#f3b2b2"/>
+                <circle cx="22" cy="41" r="3" fill="#f5dfd0" stroke="#484a59" stroke-width="1.5"/>
+                <circle cx="38" cy="41" r="3" fill="#f5dfd0" stroke="#484a59" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <span class="mascot-name" id="homeAvatarName">LOG IN</span>
+          </button>
+        </div>
+
+        <!-- Gingham Class Banner -->
+        <div class="space-card-wrap">
+          <span class="bow-top">
+            <svg width="42" height="24" viewBox="0 0 42 24" fill="none">
+              <path d="M18 12 C8 4, 2 8, 4 15 C6 20, 14 16, 18 13 Z" fill="#d9e4cb" stroke="#484a59" stroke-width="1.5"/>
+              <path d="M24 12 C34 4, 40 8, 38 15 C36 20, 28 16, 24 13 Z" fill="#d9e4cb" stroke="#484a59" stroke-width="1.5"/>
+              <path d="M19 14 L14 23 M23 14 L28 23" stroke="#484a59" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="21" cy="12" r="3.5" fill="#e3edd6" stroke="#484a59" stroke-width="1.5"/>
+            </svg>
+          </span>
+          <span class="corner-flower" style="top: -8px; left: 10px;">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="6" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="19" cy="11" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="17" cy="18" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="9" cy="18" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="7" cy="11" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="13" cy="13" r="3" fill="#fff7d6" stroke="#484a59" stroke-width="1.2"/></svg>
+          </span>
+          <span class="corner-flower" style="top: -8px; right: 10px;">
+            <svg width="24" height="24" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="6" r="4" fill="#fad2dc" stroke="#484a59" stroke-width="1.2"/><circle cx="19" cy="11" r="4" fill="#fad2dc" stroke="#484a59" stroke-width="1.2"/><circle cx="17" cy="18" r="4" fill="#fad2dc" stroke="#484a59" stroke-width="1.2"/><circle cx="9" cy="18" r="4" fill="#fad2dc" stroke="#484a59" stroke-width="1.2"/><circle cx="7" cy="11" r="4" fill="#fad2dc" stroke="#484a59" stroke-width="1.2"/><circle cx="13" cy="13" r="3" fill="#fff7d6" stroke="#484a59" stroke-width="1.2"/></svg>
+          </span>
+
+          <div class="space-card">
+            <div class="space-label">Your Learning Space</div>
+            <div class="space-class" id="homeClassLabel">CLASS 1</div>
+            <div class="space-sub" id="homeSpaceSub">Ready to learn something new today?</div>
+          </div>
+
+          <span class="corner-flower" style="bottom: -8px; left: 10px;">
+            <svg width="24" height="24" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="6" r="4" fill="#fad2dc" stroke="#484a59" stroke-width="1.2"/><circle cx="19" cy="11" r="4" fill="#fad2dc" stroke="#484a59" stroke-width="1.2"/><circle cx="17" cy="18" r="4" fill="#fad2dc" stroke="#484a59" stroke-width="1.2"/><circle cx="9" cy="18" r="4" fill="#fad2dc" stroke="#484a59" stroke-width="1.2"/><circle cx="7" cy="11" r="4" fill="#fad2dc" stroke="#484a59" stroke-width="1.2"/><circle cx="13" cy="13" r="3" fill="#fff7d6" stroke="#484a59" stroke-width="1.2"/></svg>
+          </span>
+          <span class="corner-flower" style="bottom: -8px; right: 10px;">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="6" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="19" cy="11" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="17" cy="18" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="9" cy="18" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="7" cy="11" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="13" cy="13" r="3" fill="#fff7d6" stroke="#484a59" stroke-width="1.2"/></svg>
+          </span>
+          <span class="bow-bot">
+            <svg width="42" height="24" viewBox="0 0 42 24" fill="none">
+              <path d="M18 12 C8 4, 2 8, 4 15 C6 20, 14 16, 18 13 Z" fill="#d9e4cb" stroke="#484a59" stroke-width="1.5"/>
+              <path d="M24 12 C34 4, 40 8, 38 15 C36 20, 28 16, 24 13 Z" fill="#d9e4cb" stroke="#484a59" stroke-width="1.5"/>
+              <path d="M19 14 L14 23 M23 14 L28 23" stroke="#484a59" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="21" cy="12" r="3.5" fill="#e3edd6" stroke="#484a59" stroke-width="1.5"/>
+            </svg>
+          </span>
+        </div>
+
+        <h2 class="section-heading">What would you like to do?</h2>
+
+        <!-- Hidden file inputs for camera & gallery -->
+        <input type="file" id="homeCameraInput" accept="image/*" capture="environment" hidden onchange="handleHomeImagePick(event)" />
+        <input type="file" id="homeUploadInput" accept="image/*" hidden onchange="handleHomeImagePick(event)" />
+
+        <!-- 2x2 Action Cards -->
+        <div class="action-grid">
+          <button type="button" class="note-card" onclick="document.getElementById('homeCameraInput').click()">
+            <span class="doodle-tl"><svg width="24" height="24" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="6" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="19" cy="11" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="17" cy="18" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="9" cy="18" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="7" cy="11" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="13" cy="13" r="3" fill="#fff7d6" stroke="#484a59" stroke-width="1.2"/></svg></span>
+            <span class="doodle-tr"><svg width="28" height="22" viewBox="0 0 34 28" fill="none"><ellipse cx="11" cy="11" rx="8" ry="6" transform="rotate(-22 11 11)" fill="#b9d6c8"/><ellipse cx="23" cy="11" rx="8" ry="6" transform="rotate(22 23 11)" fill="#b9d6c8"/><ellipse cx="12" cy="19" rx="5" ry="4" transform="rotate(18 12 19)" fill="#cde3d8"/><ellipse cx="22" cy="19" rx="5" ry="4" transform="rotate(-18 22 19)" fill="#cde3d8"/><rect x="16" y="7" width="2" height="14" rx="1" fill="#6b8577"/></svg></span>
+            <span class="doodle-br"><svg width="26" height="18" viewBox="0 0 42 24" fill="none"><path d="M18 12 C8 4, 2 8, 4 15 C6 20, 14 16, 18 13 Z" fill="#f7c89b" stroke="#484a59" stroke-width="1.8"/><path d="M24 12 C34 4, 40 8, 38 15 C36 20, 28 16, 24 13 Z" fill="#f7c89b" stroke="#484a59" stroke-width="1.8"/><circle cx="21" cy="12" r="3.5" fill="#fde0c2" stroke="#484a59" stroke-width="1.8"/></svg></span>
+            <div class="note-icon">
+              <svg width="32" height="26" viewBox="0 0 36 28" fill="none">
+                <rect x="3" y="6" width="30" height="19" rx="4" fill="#efb2b9" stroke="#99646d" stroke-width="1.6"/>
+                <path d="M12 6 L15 2 H21 L24 6" fill="#efb2b9" stroke="#99646d" stroke-width="1.6"/>
+                <circle cx="18" cy="15.5" r="5.5" fill="#fff4f5" stroke="#99646d" stroke-width="1.5"/>
+                <circle cx="18" cy="15.5" r="2.8" fill="#b4838c"/>
+                <circle cx="27" cy="10.5" r="1.4" fill="#fff"/>
+              </svg>
+            </div>
+            <div class="note-title">Scan a question</div>
+            <div class="note-desc">Take a picture of the homework</div>
+          </button>
+
+          <button type="button" class="note-card" onclick="document.getElementById('homeUploadInput').click()">
+            <span class="doodle-tr"><svg width="26" height="18" viewBox="0 0 42 24" fill="none"><path d="M18 12 C8 4, 2 8, 4 15 C6 20, 14 16, 18 13 Z" fill="#f7c89b" stroke="#484a59" stroke-width="1.8"/><path d="M24 12 C34 4, 40 8, 38 15 C36 20, 28 16, 24 13 Z" fill="#f7c89b" stroke="#484a59" stroke-width="1.8"/><circle cx="21" cy="12" r="3.5" fill="#fde0c2" stroke="#484a59" stroke-width="1.8"/></svg></span>
+            <span class="doodle-bl"><svg width="24" height="24" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="6" r="4" fill="#e2d0f7" stroke="#484a59" stroke-width="1.2"/><circle cx="19" cy="11" r="4" fill="#e2d0f7" stroke="#484a59" stroke-width="1.2"/><circle cx="17" cy="18" r="4" fill="#e2d0f7" stroke="#484a59" stroke-width="1.2"/><circle cx="9" cy="18" r="4" fill="#e2d0f7" stroke="#484a59" stroke-width="1.2"/><circle cx="7" cy="11" r="4" fill="#e2d0f7" stroke="#484a59" stroke-width="1.2"/><circle cx="13" cy="13" r="3" fill="#fff7d6" stroke="#484a59" stroke-width="1.2"/></svg></span>
+            <div class="note-icon">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <circle cx="14" cy="14" r="12" fill="#dc77a8"/>
+                <path d="M14 20 V9 M9.5 13 L14 8.5 L18.5 13" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="note-title">Upload a question</div>
+            <div class="note-desc">Choose an existing image</div>
+          </button>
+
+          <button type="button" class="note-card" onclick="openTutorText()">
+            <span class="doodle-tl"><svg width="24" height="24" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="6" r="4" fill="#e2d0f7" stroke="#484a59" stroke-width="1.2"/><circle cx="19" cy="11" r="4" fill="#e2d0f7" stroke="#484a59" stroke-width="1.2"/><circle cx="17" cy="18" r="4" fill="#e2d0f7" stroke="#484a59" stroke-width="1.2"/><circle cx="9" cy="18" r="4" fill="#e2d0f7" stroke="#484a59" stroke-width="1.2"/><circle cx="7" cy="11" r="4" fill="#e2d0f7" stroke="#484a59" stroke-width="1.2"/><circle cx="13" cy="13" r="3" fill="#fff7d6" stroke="#484a59" stroke-width="1.2"/></svg></span>
+            <span class="doodle-br"><svg width="26" height="18" viewBox="0 0 42 24" fill="none"><path d="M18 12 C8 4, 2 8, 4 15 C6 20, 14 16, 18 13 Z" fill="#f7c89b" stroke="#484a59" stroke-width="1.8"/><path d="M24 12 C34 4, 40 8, 38 15 C36 20, 28 16, 24 13 Z" fill="#f7c89b" stroke="#484a59" stroke-width="1.8"/><circle cx="21" cy="12" r="3.5" fill="#fde0c2" stroke="#484a59" stroke-width="1.8"/></svg></span>
+            <div class="note-icon">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <g transform="rotate(35 14 14)">
+                  <rect x="11" y="4" width="6" height="15" rx="1" fill="#f4cf4e" stroke="#695f44" stroke-width="1.4"/>
+                  <rect x="11" y="2" width="6" height="3.5" rx="1" fill="#f0a8b8" stroke="#695f44" stroke-width="1.3"/>
+                  <polygon points="11,19 17,19 14,25" fill="#f6dfb8" stroke="#695f44" stroke-width="1.3"/>
+                  <polygon points="13,23 15,23 14,25" fill="#484a59"/>
+                </g>
+              </svg>
+            </div>
+            <div class="note-title">Type a question</div>
+            <div class="note-desc">Write your question</div>
+          </button>
+
+          <button type="button" class="note-card" onclick="openMyClass()">
+            <span class="doodle-tr"><svg width="26" height="18" viewBox="0 0 42 24" fill="none"><path d="M18 12 C8 4, 2 8, 4 15 C6 20, 14 16, 18 13 Z" fill="#f7c89b" stroke="#484a59" stroke-width="1.8"/><path d="M24 12 C34 4, 40 8, 38 15 C36 20, 28 16, 24 13 Z" fill="#f7c89b" stroke="#484a59" stroke-width="1.8"/><circle cx="21" cy="12" r="3.5" fill="#fde0c2" stroke="#484a59" stroke-width="1.8"/></svg></span>
+            <span class="doodle-bl"><svg width="24" height="24" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="6" r="4" fill="#e2d0f7" stroke="#484a59" stroke-width="1.2"/><circle cx="19" cy="11" r="4" fill="#e2d0f7" stroke="#484a59" stroke-width="1.2"/><circle cx="17" cy="18" r="4" fill="#e2d0f7" stroke="#484a59" stroke-width="1.2"/><circle cx="9" cy="18" r="4" fill="#e2d0f7" stroke="#484a59" stroke-width="1.2"/><circle cx="7" cy="11" r="4" fill="#e2d0f7" stroke="#484a59" stroke-width="1.2"/><circle cx="13" cy="13" r="3" fill="#fff7d6" stroke="#484a59" stroke-width="1.2"/></svg></span>
+            <div class="note-icon">
+              <svg width="32" height="26" viewBox="0 0 34 28" fill="none">
+                <rect x="4" y="4" width="26" height="17" rx="8.5" fill="#b47b8c"/>
+                <polygon points="10,19 7,25 15,20" fill="#b47b8c"/>
+                <circle cx="12" cy="12.5" r="1.6" fill="#fff"/>
+                <circle cx="17" cy="12.5" r="1.6" fill="#fff"/>
+                <circle cx="22" cy="12.5" r="1.6" fill="#fff"/>
+              </svg>
+            </div>
+            <div class="note-title">Class interaction</div>
+            <div class="note-desc">Learn with classmates</div>
+          </button>
+        </div>
+
+        <!-- Explore Learning opens Olympiad Hub -->
+        <button type="button" class="explore-trigger" onclick="openOlympiadTab()">Explore Learning</button>
+      </div>
+    </main>
+
+    <!-- SECTION: LEARNING VIEW (AI TUTOR + OLYMPIAD HUB) -->
+    <main id="viewLearning" class="view">
+      <div class="seg-tabs">
+        <button class="seg-btn active" id="tabTutorBtn" onclick="switchLearningTab('tutor')">AI Tutor</button>
+        <button class="seg-btn" id="tabOlympiadBtn" onclick="switchLearningTab('olympiad')">Olympiad Hub</button>
+      </div>
+
+      <!-- AI Tutor Tab -->
+      <div id="subTutor">
+        <div class="tutor-box">
+          <div class="tutor-head">
+            <div>
+              <div style="font-size: 15px; font-weight: 800;">AI Friend & Tutor</div>
+              <div style="font-size: 11px; opacity: 0.9;">Hint first, then simple step-by-step help</div>
+            </div>
+            <button class="btn btn-outline" style="padding: 5px 10px; font-size: 11px;" onclick="resetTutorSession()">New Chat</button>
+          </div>
+
+          <div class="tutor-feed" id="tutorFeed">
+            <div class="bubble ai">
+              Hi! Tap <strong>+</strong> to scan or upload a homework photo, or type your question below. I will give you a helpful hint first!
+            </div>
+          </div>
+
+          <div class="tutor-preview" id="tutorImagePreview">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <img id="tutorPreviewThumb" src="" alt="Preview" />
+              <span>Image attached</span>
+            </div>
+            <button type="button" class="btn btn-danger" style="padding: 4px 9px; font-size: 11px;" onclick="clearTutorImage()">Remove</button>
+          </div>
+
+          <form class="tutor-bar" onsubmit="sendTutorMessage(event)">
+            <input type="file" id="tutorFileInput" accept="image/*" hidden onchange="handleTutorFile(event)" />
+            <button type="button" class="plus-btn" onclick="document.getElementById('tutorFileInput').click()" title="Upload image">+</button>
+            <input class="input" id="tutorInput" placeholder="Ask a homework question..." autocomplete="off" />
+            <button type="button" class="btn btn-outline" style="padding: 9px 10px; font-size: 11px;" onclick="askSimpler()">Hint+</button>
+            <button type="submit" class="btn btn-primary" style="padding: 9px 12px;">Send</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Olympiad Hub Tab -->
+      <div id="subOlympiad" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <h2 style="font-size: 20px; font-weight: 800;">Olympiad & ECA News</h2>
+          <button class="btn btn-outline" style="padding: 6px 10px; font-size: 12px;" onclick="loadOlympiadPosts()">↻ Refresh</button>
+        </div>
+
+        <!-- Admin composer (only visible if role === 'admin') -->
+        <div class="soft-card" id="adminOlympiadBox" style="display: none; margin-bottom: 14px; border-color: var(--primary);">
+          <h3 style="font-size: 15px; margin-bottom: 8px;">Admin: Publish Update</h3>
+          <form onsubmit="createOlympiadPost(event)">
+            <div class="form-group"><input class="input" id="olyTitle" placeholder="Title" required /></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+              <select class="input" id="olyCategory">
+                <option value="Olympiad">Olympiad</option>
+                <option value="ECA">ECA</option>
+                <option value="News">Educational News</option>
+              </select>
+              <input class="input" id="olyDate" placeholder="Event Date" />
+            </div>
+            <div class="form-group"><input class="input" id="olyClasses" value="Class 1-5" placeholder="Target Classes" /></div>
+            <div class="form-group"><textarea class="input" id="olySummary" rows="2" placeholder="Summary..." required></textarea></div>
+            <div class="form-group"><input class="input" id="olyLink" placeholder="Reference Link (optional)" /></div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Publish Update</button>
+          </form>
+        </div>
+
+        <div class="filter-row" id="olympiadFilters">
+          <button class="pill active" onclick="filterOlympiad('All')">All</button>
+          <button class="pill" onclick="filterOlympiad('Olympiad')">Olympiad</button>
+          <button class="pill" onclick="filterOlympiad('ECA')">ECA</button>
+          <button class="pill" onclick="filterOlympiad('News')">News</button>
+        </div>
+
+        <div id="olympiadGrid" style="display: flex; flex-direction: column; gap: 10px;">
+          <p style="font-size: 13px; color: var(--muted);">Loading updates...</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- SECTION: MY CLASS VIEW -->
+    <main id="viewMyClass" class="view">
+      <div class="class-banner">
+        <span class="badge" id="myClassBadge">CLASS 1</span>
+        <h2 id="myClassTitle" style="font-size: 20px; font-weight: 800;">Class Learning Space</h2>
+        <p id="myClassDesc" style="font-size: 12px; color: var(--muted); margin-top: 2px;">Only classmates in your class can chat here.</p>
+        <div id="myCharacterBox" style="margin-top: 8px; font-size: 12px; font-weight: 800; color: var(--class-color);"></div>
+      </div>
+
+      <div class="chat-box">
+        <div class="chat-head">
+          <span id="chatHeaderTitle"># Class Community</span>
+          <button class="btn btn-outline" style="padding: 5px 10px; font-size: 11px;" onclick="loadClassMessages()">↻ Refresh</button>
+        </div>
+        <div class="chat-feed" id="classChatFeed">
+          <p style="color: var(--muted); font-size: 12px; text-align: center; margin-top: 24px;">Loading class messages...</p>
+        </div>
+        <form class="chat-compose" onsubmit="sendClassMessage(event)">
+          <input class="input" id="classMsgInput" placeholder="Write to your classmates..." autocomplete="off" required />
+          <button class="btn btn-primary" type="submit">Send</button>
+        </form>
+      </div>
+    </main>
+
+    <!-- SECTION: PROFILE & ABOUT VIEW -->
+    <main id="viewProfile" class="view">
+      <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 14px;">Student Profile</h2>
+
+      <div class="soft-card" id="profileLoggedOutBox">
+        <h3 style="font-size: 17px; margin-bottom: 6px;">Sign In or Create Account</h3>
+        <p style="font-size: 13px; color: var(--muted); margin-bottom: 14px;">
+          Log in to save your class level, get your inclusive animal/flower character, and join your Class 1–5 community.
+        </p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <button class="btn btn-primary" onclick="openAuthModal('login')">Log In</button>
+          <button class="btn btn-outline" onclick="openAuthModal('signup')">Sign Up</button>
+        </div>
+      </div>
+
+      <div class="soft-card" id="profileLoggedInBox" style="display: none;">
+        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+          <div id="profEmoji" style="width: 52px; height: 46px; display: flex; align-items: center; justify-content: center;"></div>
+          <div>
+            <h3 id="profName" style="font-size: 19px;">Student</h3>
+            <div id="profMeta" style="font-size: 12px; font-weight: 700; color: var(--primary);">Class 1</div>
+          </div>
+        </div>
+        <div style="font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px;">
+          <div><strong>Character:</strong> <span id="profCharName">Friend</span></div>
+          <div><strong>School:</strong> <span id="profSchool">-</span></div>
+          <div><strong>Email:</strong> <span id="profEmail">-</span></div>
+        </div>
+        <button class="btn btn-danger" style="width: 100%;" onclick="logout()">Log Out</button>
+      </div>
+
+      <div class="soft-card" style="margin-top: 14px;">
+        <span class="badge">ABOUT LEARNBEE</span>
+        <h3 style="font-size: 16px; margin-bottom: 6px;">Inclusive Learning for Class 1–5</h3>
+        <p id="aboutMissionText" style="font-size: 13px; color: var(--muted); line-height: 1.5;">
+          LearnBee creates a safe, interactive, and equal digital learning environment for Class 1 to Class 5 students with neutral characters, isolated class chats, and hint-first AI guidance.
+        </p>
+      </div>
+    </main>
+
+    <!-- SECTION: BOTTOM NAVIGATION BAR -->
+    <nav class="bottom-nav-wrap">
+      <div class="bottom-nav">
+        <button class="bnav-btn active" id="navHome" onclick="switchView('home')">
+          <span class="bnav-ico">
+            <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
+              <path d="M5 12 V22 H21 V12" fill="#f9e6d0" stroke="#856556" stroke-width="1.3"/>
+              <path d="M3 12 L13 4 L23 12 Z" fill="#df6b62" stroke="#856556" stroke-width="1.3" stroke-linejoin="round"/>
+              <rect x="11" y="15" width="4" height="7" fill="#9f6c56"/>
+              <rect x="7" y="14" width="2.5" height="2.5" fill="#fff"/>
+            </svg>
+          </span>
+          <span>Home</span>
+        </button>
+        <button class="bnav-btn" id="navLearning" onclick="switchView('learning')">
+          <span class="bnav-ico">
+            <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
+              <path d="M3 7 C7 6, 11 7, 13 9 C15 7, 19 6, 23 7 V19 C19 18, 15 19, 13 21 C11 19, 7 18, 3 19 Z" fill="#faf2dc" stroke="#a69a7c" stroke-width="1.4" stroke-linejoin="round"/>
+              <path d="M13 9 V21" stroke="#a69a7c" stroke-width="1.4"/>
+            </svg>
+          </span>
+          <span>Learning</span>
+        </button>
+        <button class="bnav-btn" id="navMyClass" onclick="openMyClass()">
+          <span class="bnav-ico">
+            <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
+              <rect x="5" y="5" width="16" height="12" rx="1.5" fill="#5b6f5e" stroke="#a1886f" stroke-width="1.8"/>
+              <path d="M8 17 L7 22 M18 17 L19 22 M13 17 V21" stroke="#a1886f" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span>Class</span>
+        </button>
+        <button class="bnav-btn" id="navProfile" onclick="switchView('profile')">
+          <span class="bnav-ico">
+            <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
+              <circle cx="13" cy="13" r="10.5" fill="#7c56b8"/>
+              <circle cx="13" cy="10" r="3.6" fill="#d8c8f2"/>
+              <path d="M7.5 19.5 C8.5 15.8, 17.5 15.8, 18.5 19.5" fill="#d8c8f2"/>
+            </svg>
+          </span>
+          <span>Profile</span>
+        </button>
+      </div>
+    </nav>
+
+  </div>
+
+  <!-- SECTION: AUTHENTICATION MODAL -->
+  <div class="modal-bg" id="authModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeAuthModal()">✕</button>
+      <h2 id="authModalTitle" style="font-size: 20px; margin-bottom: 14px;">Student Sign In</h2>
+
+      <!-- Login Form -->
+      <form id="loginForm" onsubmit="submitLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="input" id="loginEmail" type="email" required placeholder="student@email.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="input" id="loginPassword" type="password" required placeholder="••••••••" />
+        </div>
+        <div style="text-align: right; margin-bottom: 10px;">
+          <button type="button" onclick="showAuthTab('forgot')" style="background: none; border: none; color: var(--primary); font-size: 12px; font-weight: 700; cursor: pointer;">Forgot password?</button>
+        </div>
+        <div class="error-text" id="loginError"></div>
+        <button class="btn btn-primary" style="width: 100%;" type="submit">Log In</button>
+        <p style="text-align: center; margin-top: 12px; font-size: 13px;">
+          New student? <button type="button" onclick="showAuthTab('signup')" style="background: none; border: none; color: var(--primary); font-weight: 800; cursor: pointer;">Create account</button>
+        </p>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="signupForm" style="display: none;" onsubmit="submitSignup(event)">
+        <div class="form-group">
+          <label class="form-label">Name or Nickname</label>
+          <input class="input" id="regName" required placeholder="e.g. Riri" />
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="form-group">
+            <label class="form-label">Age</label>
+            <input class="input" id="regAge" type="number" min="5" max="15" required placeholder="7" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Class (1–5)</label>
+            <select class="input" id="regClass" required>
+              <option value="1">Class 1</option>
+              <option value="2">Class 2</option>
+              <option value="3">Class 3</option>
+              <option value="4">Class 4</option>
+              <option value="5">Class 5</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">School Name</label>
+          <input class="input" id="regSchool" required placeholder="Your school name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="input" id="regEmail" type="email" required placeholder="parent-or-student@email.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="input" id="regPassword" type="password" minlength="6" required placeholder="At least 6 characters" />
+        </div>
+        <div class="error-text" id="signupError"></div>
+        <button class="btn btn-primary" style="width: 100%;" type="submit">Register & Send Code</button>
+        <p style="text-align: center; margin-top: 12px; font-size: 13px;">
+          Already registered? <button type="button" onclick="showAuthTab('login')" style="background: none; border: none; color: var(--primary); font-weight: 800; cursor: pointer;">Log In</button>
+        </p>
+      </form>
+
+      <!-- OTP Form -->
+      <form id="otpForm" style="display: none;" onsubmit="submitOtp(event)">
+        <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">Enter the code sent to <strong id="otpTargetEmail"></strong>.</p>
+        <div class="form-group">
+          <label class="form-label">Verification Code</label>
+          <input class="input" id="otpCode" maxlength="8" required style="text-align: center; letter-spacing: 4px; font-size: 18px;" placeholder="123456" />
+        </div>
+        <div class="error-text" id="otpError"></div>
+        <button class="btn btn-primary" style="width: 100%;" type="submit">Verify & Enter</button>
+      </form>
+
+      <!-- Forgot Password -->
+      <form id="forgotForm" style="display: none;" onsubmit="submitForgot(event)">
+        <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">Enter your email for a recovery code.</p>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="input" id="forgotEmail" type="email" required />
+        </div>
+        <div class="error-text" id="forgotError"></div>
+        <button class="btn btn-primary" style="width: 100%;" type="submit">Send Recovery Code</button>
+        <p style="text-align: center; margin-top: 10px;"><button type="button" onclick="showAuthTab('login')" style="background: none; border: none; color: var(--primary); font-weight: 700; cursor: pointer;">Back to Login</button></p>
+      </form>
+
+      <!-- Reset Password -->
+      <form id="resetForm" style="display: none;" onsubmit="submitReset(event)">
+        <div class="form-group">
+          <label class="form-label">Recovery Code</label>
+          <input class="input" id="resetCode" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input class="input" id="resetNewPass" type="password" minlength="6" required />
+        </div>
+        <div class="error-text" id="resetError"></div>
+        <button class="btn btn-primary" style="width: 100%;" type="submit">Reset Password</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- SECTION: JAVASCRIPT -->
+  <script>
+    const API_BASE = 'https://bacchakaccha.onrender.com';
+
+    let siteConfig = {};
+    let classThemes = [];
+    let olympiadPosts = [];
+    let activeOlyFilter = 'All';
+    let pendingViewAfterLogin = null;
+    let pendingEmail = '';
+    let pendingImageDataUrl = null;
+    let classPollTimer = null;
+    let tutorSessionId = localStorage.getItem('shikkha_tutor_sid') || ('tut_' + Math.random().toString(36).slice(2, 10));
+    localStorage.setItem('shikkha_tutor_sid', tutorSessionId);
+
+    // Session helpers
+    function getToken() { return localStorage.getItem('shikkha_token'); }
+    function getUser() {
+      try { return JSON.parse(localStorage.getItem('shikkha_user')); }
+      catch { return null; }
+    }
+    function saveSession(token, user) {
+      localStorage.setItem('shikkha_token', token);
+      localStorage.setItem('shikkha_user', JSON.stringify(user));
+    }
+    function clearSession() {
+      localStorage.removeItem('shikkha_token');
+      localStorage.removeItem('shikkha_user');
+    }
+
+    // Render 30s wake timer
+    function startWakeCheck() {
+      const banner = document.getElementById('wakeBanner');
+      const secEl = document.getElementById('wakeSeconds');
+      let remaining = 30;
+      let resolved = false;
+
+      const timer = setInterval(() => {
+        if (resolved) return clearInterval(timer);
+        remaining = Math.max(0, remaining - 1);
+        secEl.textContent = remaining;
+        if (remaining === 0) clearInterval(timer);
+      }, 1000);
+
+      const slowShow = setTimeout(() => {
+        if (!resolved) banner.style.display = 'block';
+      }, 1200);
+
+      fetch(`${API_BASE}/api/health`)
+        .then(r => {
+          if (r.ok) {
+            resolved = true;
+            clearTimeout(slowShow);
+            clearInterval(timer);
+            banner.style.display = 'none';
+          }
+        })
+        .catch(() => { banner.style.display = 'block'; });
+    }
+
+    // Pastel character SVGs (no emojis)
+    function getCharacterSvg(name, size) {
+      const n = String(name || 'Hedgehog').toLowerCase();
+      const s = size || 56;
+      if (n.includes('panda')) {
+        return `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none"><circle cx="16" cy="18" r="8" fill="#3a3b47"/><circle cx="48" cy="18" r="8" fill="#3a3b47"/><circle cx="32" cy="34" r="20" fill="#fff" stroke="#484a59" stroke-width="2"/><ellipse cx="24" cy="32" rx="5" ry="6" fill="#3a3b47"/><ellipse cx="40" cy="32" rx="5" ry="6" fill="#3a3b47"/><circle cx="24" cy="31" r="2" fill="#fff"/><circle cx="40" cy="31" r="2" fill="#fff"/><ellipse cx="32" cy="38" rx="3" ry="2" fill="#3a3b47"/></svg>`;
+      }
+      if (n.includes('fox')) {
+        return `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none"><polygon points="12,10 26,22 14,32" fill="#e98456" stroke="#484a59" stroke-width="2"/><polygon points="52,10 38,22 50,32" fill="#e98456" stroke="#484a59" stroke-width="2"/><ellipse cx="32" cy="36" rx="20" ry="17" fill="#f19468" stroke="#484a59" stroke-width="2"/><path d="M16 40 Q32 52 48 40 Q32 34 16 40 Z" fill="#fff6eb"/><circle cx="24" cy="33" r="2.2" fill="#2d2e38"/><circle cx="40" cy="33" r="2.2" fill="#2d2e38"/><circle cx="32" cy="39" r="2.5" fill="#484a59"/></svg>`;
+      }
+      if (n.includes('rabbit')) {
+        return `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none"><ellipse cx="23" cy="18" rx="6" ry="14" fill="#fff5f7" stroke="#484a59" stroke-width="2"/><ellipse cx="41" cy="18" rx="6" ry="14" fill="#fff5f7" stroke="#484a59" stroke-width="2"/><ellipse cx="32" cy="40" rx="18" ry="15" fill="#fff5f7" stroke="#484a59" stroke-width="2"/><circle cx="25" cy="38" r="2" fill="#2d2e38"/><circle cx="39" cy="38" r="2" fill="#2d2e38"/><circle cx="32" cy="42" r="2" fill="#f19cb0"/></svg>`;
+      }
+      if (n.includes('sunflower')) {
+        return `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="12" r="7" fill="#fbd266"/><circle cx="48" cy="20" r="7" fill="#fbd266"/><circle cx="52" cy="36" r="7" fill="#fbd266"/><circle cx="42" cy="50" r="7" fill="#fbd266"/><circle cx="22" cy="50" r="7" fill="#fbd266"/><circle cx="12" cy="36" r="7" fill="#fbd266"/><circle cx="16" cy="20" r="7" fill="#fbd266"/><circle cx="32" cy="32" r="14" fill="#9c6c4e" stroke="#484a59" stroke-width="2"/><circle cx="27" cy="30" r="2" fill="#fff"/><circle cx="37" cy="30" r="2" fill="#fff"/></svg>`;
+      }
+      if (n.includes('butterfly')) {
+        return `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none"><ellipse cx="20" cy="24" rx="14" ry="11" transform="rotate(-20 20 24)" fill="#f7b7cb" stroke="#484a59" stroke-width="1.8"/><ellipse cx="44" cy="24" rx="14" ry="11" transform="rotate(20 44 24)" fill="#f7b7cb" stroke="#484a59" stroke-width="1.8"/><ellipse cx="22" cy="42" rx="10" ry="8" transform="rotate(15 22 42)" fill="#fad5e0" stroke="#484a59" stroke-width="1.8"/><ellipse cx="42" cy="42" rx="10" ry="8" transform="rotate(-15 42 42)" fill="#fad5e0" stroke="#484a59" stroke-width="1.8"/><rect x="30" y="16" width="4" height="32" rx="2" fill="#5e4b56"/></svg>`;
+      }
+      return `<svg width="${s}" height="${Math.round(s * 0.8)}" viewBox="0 0 64 52" fill="none"><path d="M12 34 C8 20, 20 8, 36 8 C52 8, 58 22, 54 34 C50 42, 16 42, 12 34 Z" fill="#a87c64" stroke="#484a59" stroke-width="2"/><path d="M12 34 C14 22, 26 16, 38 22 C44 25, 48 32, 46 39 C38 43, 18 43, 12 34 Z" fill="#f9ead8" stroke="#484a59" stroke-width="1.8"/><circle cx="24" cy="27" r="2.2" fill="#2d2e38"/><circle cx="35" cy="27" r="2.2" fill="#2d2e38"/><ellipse cx="29.5" cy="31" rx="2.5" ry="1.8" fill="#484a59"/><ellipse cx="20" cy="31" rx="3" ry="1.6" fill="#f3b2b2"/><ellipse cx="39" cy="31" rx="3" ry="1.6" fill="#f3b2b2"/><circle cx="22" cy="41" r="3" fill="#f5dfd0" stroke="#484a59" stroke-width="1.5"/><circle cx="38" cy="41" r="3" fill="#f5dfd0" stroke="#484a59" stroke-width="1.5"/></svg>`;
+    }
+
+    // Load SQL site config
+    async function loadSiteConfig() {
+      try {
+        const res = await fetch(`${API_BASE}/api/config`);
+        if (!res.ok) return;
+        const data = await res.json();
+        siteConfig = data.site_config || {};
+        classThemes = data.class_themes || [];
+
+        if (siteConfig.about_mission) document.getElementById('aboutMissionText').textContent = siteConfig.about_mission;
+        if (siteConfig.welcome_label) document.getElementById('welcomeLabel').textContent = siteConfig.welcome_label;
+        if (siteConfig.space_subtitle) document.getElementById('homeSpaceSub').textContent = siteConfig.space_subtitle;
+      } catch {}
+    }
+    // Navigation
+    function switchView(name) {
+      if (classPollTimer) { clearInterval(classPollTimer); classPollTimer = null; }
+
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+
+      if (name === 'home') {
+        document.getElementById('viewHome').classList.add('active');
+        document.getElementById('navHome').classList.add('active');
+      } else if (name === 'learning') {
+        document.getElementById('viewLearning').classList.add('active');
+        document.getElementById('navLearning').classList.add('active');
+      } else if (name === 'myclass') {
+        document.getElementById('viewMyClass').classList.add('active');
+        document.getElementById('navMyClass').classList.add('active');
+        setupMyClassDashboard();
+        loadClassMessages();
+        classPollTimer = setInterval(loadClassMessages, 5000);
+      } else if (name === 'profile') {
+        document.getElementById('viewProfile').classList.add('active');
+        document.getElementById('navProfile').classList.add('active');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchLearningTab(tab) {
+      const isTutor = tab === 'tutor';
+      document.getElementById('subTutor').style.display = isTutor ? 'block' : 'none';
+      document.getElementById('subOlympiad').style.display = isTutor ? 'none' : 'block';
+      document.getElementById('tabTutorBtn').classList.toggle('active', isTutor);
+      document.getElementById('tabOlympiadBtn').classList.toggle('active', !isTutor);
+      if (!isTutor) loadOlympiadPosts();
+    }
+
+    function openOlympiadTab() {
+      switchView('learning');
+      switchLearningTab('olympiad');
+    }
+
+    function openTutorText() {
+      switchView('learning');
+      switchLearningTab('tutor');
+      setTimeout(() => document.getElementById('tutorInput').focus(), 120);
+    }
+
+    function handleHomeImagePick(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        pendingImageDataUrl = reader.result;
+        document.getElementById('tutorPreviewThumb').src = pendingImageDataUrl;
+        document.getElementById('tutorImagePreview').style.display = 'flex';
+        switchView('learning');
+        switchLearningTab('tutor');
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    }
+
+    function openMyClass() {
+      const user = getUser();
+      if (!user || !getToken()) {
+        pendingViewAfterLogin = 'myclass';
+        openAuthModal('login');
+        return;
+      }
+      switchView('myclass');
+    }
+
+    function updateUserUI() {
+      const user = getUser();
+      const loggedIn = Boolean(user && getToken());
+      const adminBox = document.getElementById('adminOlympiadBox');
+
+      if (loggedIn) {
+        const displayName = user.name || 'Friend';
+        document.getElementById('helloName').textContent = `Hello, ${displayName}!`;
+        document.getElementById('homeAvatarEmoji').innerHTML = getCharacterSvg(user.character_name, 60);
+        document.getElementById('homeAvatarName').textContent = displayName.toUpperCase();
+        document.getElementById('homeClassLabel').textContent = `CLASS ${user.class_level}`;
+
+        document.getElementById('profileLoggedOutBox').style.display = 'none';
+        document.getElementById('profileLoggedInBox').style.display = 'block';
+        document.getElementById('profEmoji').innerHTML = getCharacterSvg(user.character_name, 50);
+        document.getElementById('profName').textContent = displayName;
+        document.getElementById('profMeta').textContent = `Class ${user.class_level} • Age ${user.age || '-'}`;
+        document.getElementById('profCharName').textContent = user.character_name || 'Friend';
+        document.getElementById('profSchool').textContent = user.school || '-';
+        document.getElementById('profEmail').textContent = user.email || '-';
+        if (adminBox) adminBox.style.display = user.role === 'admin' ? 'block' : 'none';
+      } else {
+        document.getElementById('helloName').textContent = 'Hello, Friend!';
+        document.getElementById('homeAvatarEmoji').innerHTML = getCharacterSvg('Hedgehog', 60);
+        document.getElementById('homeAvatarName').textContent = 'LOG IN';
+        document.getElementById('homeClassLabel').textContent = 'CLASS 1';
+
+        document.getElementById('profileLoggedOutBox').style.display = 'block';
+        document.getElementById('profileLoggedInBox').style.display = 'none';
+        if (adminBox) adminBox.style.display = 'none';
+      }
+    }
+
+    function logout() {
+      clearSession();
+      updateUserUI();
+      switchView('home');
+    }
+
+    // Class Community
+    function setupMyClassDashboard() {
+      const user = getUser();
+      if (!user) return;
+      const lvl = Number(user.class_level);
+      const theme = classThemes.find(t => Number(t.class_level) === lvl) || {};
+
+      document.documentElement.style.setProperty('--class-color', theme.theme_color || '#5b4df0');
+      document.documentElement.style.setProperty('--class-soft', theme.soft_bg || '#eef0ff');
+
+      document.getElementById('myClassBadge').textContent = `CLASS ${lvl}`;
+      document.getElementById('myClassTitle').textContent = theme.title || `Class ${lvl} Community`;
+      document.getElementById('myClassDesc').textContent = theme.description || `Exclusive chat for Class ${lvl} students.`;
+      document.getElementById('myCharacterBox').textContent = `${user.character_name || 'Friend'} (${user.name})`;
+      document.getElementById('chatHeaderTitle').textContent = `# class-${lvl}-study-room`;
+    }
+
+    async function loadClassMessages() {
+      const feed = document.getElementById('classChatFeed');
+      const token = getToken();
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/class/messages`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          feed.innerHTML = `<p style="color: var(--danger); font-size: 12px; text-align: center;">${data.error || 'Could not load messages.'}</p>`;
+          return;
+        }
+        const messages = data.messages || [];
+        if (!messages.length) {
+          feed.innerHTML = `<p style="color: var(--muted); font-size: 12px; text-align: center; margin-top: 24px;">No messages yet in Class ${data.class_level}. Say hello!</p>`;
+          return;
+        }
+        feed.innerHTML = messages.map(m => `
+          <div class="msg-row">
+            <div class="msg-avatar">${getCharacterSvg(m.sender_character, 24)}</div>
+            <div style="flex: 1;">
+              <div class="msg-meta">
+                <span class="msg-author">${escapeHtml(m.sender_name)}</span>
+                <span class="msg-school">${escapeHtml(m.sender_school || '')}</span>
+                <span class="msg-school">• ${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+              </div>
+              <div style="font-size: 13px;">${escapeHtml(m.message)}</div>
+            </div>
+          </div>
+        `).join('');
+        feed.scrollTop = feed.scrollHeight;
+      } catch {
+        feed.innerHTML = `<p style="color: var(--danger); font-size: 12px; text-align: center;">Connection error.</p>`;
+      }
+    }
+
+    async function sendClassMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('classMsgInput');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      try {
+        const res = await fetch(`${API_BASE}/api/class/messages`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getToken()}`
+          },
+          body: JSON.stringify({ message: text })
+        });
+        if (res.ok) loadClassMessages();
+      } catch {}
+    }
+
+    // AI Tutor
+    function handleTutorFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        pendingImageDataUrl = reader.result;
+        document.getElementById('tutorPreviewThumb').src = pendingImageDataUrl;
+        document.getElementById('tutorImagePreview').style.display = 'flex';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearTutorImage() {
+      pendingImageDataUrl = null;
+      document.getElementById('tutorFileInput').value = '';
+      document.getElementById('tutorImagePreview').style.display = 'none';
+    }
+
+    function appendTutorBubble(role, text, imgSrc) {
+      const feed = document.getElementById('tutorFeed');
+      const div = document.createElement('div');
+      div.className = `bubble ${role}`;
+      if (imgSrc) {
+        const img = document.createElement('img');
+        img.src = imgSrc;
+        div.appendChild(img);
+      }
+      const p = document.createElement('div');
+      p.textContent = text;
+      div.appendChild(p);
+      feed.appendChild(div);
+      feed.scrollTop = feed.scrollHeight;
+      return p;
+    }
+
+    async function sendTutorMessage(e, overrideText) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('tutorInput');
+      const text = (overrideText !== undefined ? overrideText : input.value).trim();
+      const img = pendingImageDataUrl;
+      if (!text && !img) return;
+
+      appendTutorBubble('student', text || 'Please help me with this homework image.', img);
+      if (overrideText === undefined) input.value = '';
+      clearTutorImage();
+
+      const replyNode = appendTutorBubble('ai', 'Thinking...');
+      const user = getUser();
+
+      try {
+        const res = await fetch(`${API_BASE}/api/ai/tutor`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getToken() || ''}`
+          },
+          body: JSON.stringify({
+            message: text,
+            imageDataUrl: img,
+            sessionId: tutorSessionId,
+            classLevel: user ? user.class_level : null
+          })
+        });
+        const data = await res.json();
+        replyNode.textContent = data.reply || data.error || 'Could not get an answer right now.';
+      } catch {
+        replyNode.textContent = 'Server is waking up or unreachable. Please try again.';
+      }
+    }
+
+    function askSimpler() {
+      sendTutorMessage(null, "I still don't understand. Please explain step-by-step in very simple words.");
+    }
+
+    function resetTutorSession() {
+      tutorSessionId = 'tut_' + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem('shikkha_tutor_sid', tutorSessionId);
+      document.getElementById('tutorFeed').innerHTML = `
+        <div class="bubble ai">Started a fresh chat! Ask any Class 1–5 question or tap + to upload an image.</div>
+      `;
+    }
+
+    // Olympiad Hub
+    async function loadOlympiadPosts() {
+      const grid = document.getElementById('olympiadGrid');
+      try {
+        const res = await fetch(`${API_BASE}/api/olympiad`);
+        olympiadPosts = await res.json();
+        renderOlympiadPosts();
+      } catch {
+        grid.innerHTML = `<p style="color: var(--danger); font-size: 13px;">Unable to load Olympiad updates.</p>`;
+      }
+    }
+
+    function filterOlympiad(cat) {
+      activeOlyFilter = cat;
+      document.querySelectorAll('#olympiadFilters .pill').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.trim() === cat);
+      });
+      renderOlympiadPosts();
+    }
+
+    function renderOlympiadPosts() {
+      const grid = document.getElementById('olympiadGrid');
+      const user = getUser();
+      const isAdmin = user && user.role === 'admin';
+      const items = activeOlyFilter === 'All'
+        ? olympiadPosts
+        : olympiadPosts.filter(p => (p.category || '').toLowerCase() === activeOlyFilter.toLowerCase());
+
+      if (!items.length) {
+        grid.innerHTML = `<p style="color: var(--muted); font-size: 13px;">No updates posted in this category yet.</p>`;
+        return;
+      }
+
+      grid.innerHTML = items.map(p => `
+        <div class="soft-card">
+          <span class="badge">${escapeHtml(p.category || 'Olympiad')} • ${escapeHtml(p.target_classes || 'Class 1-5')}</span>
+          <h3 style="font-size: 16px; margin-bottom: 4px;">${escapeHtml(p.title)}</h3>
+          ${p.event_date ? `<p style="font-size: 11px; font-weight: 800; color: var(--primary); margin-bottom: 4px;">Date: ${escapeHtml(p.event_date)}</p>` : ''}
+          <p style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">${escapeHtml(p.summary)}</p>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            ${p.external_link ? `<a class="btn btn-outline" style="font-size: 11px; padding: 6px 10px; text-decoration: none;" href="${escapeHtml(p.external_link)}" target="_blank" rel="noopener">Read Details →</a>` : ''}
+            ${isAdmin ? `<button class="btn btn-danger" style="font-size: 11px; padding: 6px 10px;" onclick="deleteOlympiadPost('${p.id}')">Delete</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function createOlympiadPost(e) {
+      e.preventDefault();
+      const payload = {
+        title: document.getElementById('olyTitle').value.trim(),
+        category: document.getElementById('olyCategory').value,
+        event_date: document.getElementById('olyDate').value.trim(),
+        target_classes: document.getElementById('olyClasses').value.trim(),
+        summary: document.getElementById('olySummary').value.trim(),
+        external_link: document.getElementById('olyLink').value.trim()
+      };
+      const res = await fetch(`${API_BASE}/api/admin/olympiad`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        e.target.reset();
+        loadOlympiadPosts();
+      }
+    }
+
+    async function deleteOlympiadPost(id) {
+      const res = await fetch(`${API_BASE}/api/admin/olympiad`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+        body: JSON.stringify({ id })
+      });
+      if (res.ok) loadOlympiadPosts();
+    }
+
+    // Auth Modal
+    function openAuthModal(tab) {
+      document.getElementById('authModal').style.display = 'flex';
+      showAuthTab(tab || 'login');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').style.display = 'none';
+      pendingViewAfterLogin = null;
+    }
+
+    function showAuthTab(tab) {
+      ['loginForm', 'signupForm', 'otpForm', 'forgotForm', 'resetForm'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+      });
+      const titles = {
+        login: 'Student Sign In',
+        signup: 'Student Sign Up (Class 1–5)',
+        otp: 'Verify Your Email',
+        forgot: 'Forgot Password',
+        reset: 'Set New Password'
+      };
+      document.getElementById('authModalTitle').textContent = titles[tab];
+      document.getElementById(tab + 'Form').style.display = 'block';
+    }
+
+    async function submitLogin(e) {
+      e.preventDefault();
+      const errEl = document.getElementById('loginError');
+      errEl.textContent = '';
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier: email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          if (data.needsVerification) {
+            pendingEmail = data.email || email;
+            document.getElementById('otpTargetEmail').textContent = pendingEmail;
+            showAuthTab('otp');
+            return;
+          }
+          errEl.textContent = data.error || 'Login failed.';
+          return;
+        }
+        finishAuth(data.token, data.user);
+      } catch {
+        errEl.textContent = 'Server unreachable. Please wait.';
+      }
+    }
+
+    async function submitSignup(e) {
+      e.preventDefault();
+      const errEl = document.getElementById('signupError');
+      errEl.textContent = '';
+
+      const payload = {
+        name: document.getElementById('regName').value.trim(),
+        age: Number(document.getElementById('regAge').value),
+        class_level: Number(document.getElementById('regClass').value),
+        school: document.getElementById('regSchool').value.trim(),
+        email: document.getElementById('regEmail').value.trim(),
+        password: document.getElementById('regPassword').value
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          errEl.textContent = data.error || 'Registration failed.';
+          return;
+        }
+        pendingEmail = payload.email;
+        document.getElementById('otpTargetEmail').textContent = pendingEmail;
+        showAuthTab('otp');
+      } catch {
+        errEl.textContent = 'Server unreachable.';
+      }
+    }
+
+    async function submitOtp(e) {
+      e.preventDefault();
+      const errEl = document.getElementById('otpError');
+      errEl.textContent = '';
+      const code = document.getElementById('otpCode').value.trim();
+
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: pendingEmail, code })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          errEl.textContent = data.error || 'Invalid code.';
+          return;
+        }
+        finishAuth(data.token, data.user);
+      } catch {
+        errEl.textContent = 'Verification failed.';
+      }
+    }
+
+    async function submitForgot(e) {
+      e.preventDefault();
+      const errEl = document.getElementById('forgotError');
+      errEl.textContent = '';
+      const email = document.getElementById('forgotEmail').value.trim();
+
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/forgot-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (!res.ok) { errEl.textContent = data.error || 'Error sending code.'; return; }
+        pendingEmail = email;
+        showAuthTab('reset');
+      } catch {
+        errEl.textContent = 'Server error.';
+      }
+    }
+
+    async function submitReset(e) {
+      e.preventDefault();
+      const errEl = document.getElementById('resetError');
+      errEl.textContent = '';
+      const code = document.getElementById('resetCode').value.trim();
+      const newPassword = document.getElementById('resetNewPass').value;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/reset-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: pendingEmail, code, newPassword })
+        });
+        const data = await res.json();
+        if (!res.ok) { errEl.textContent = data.error || 'Reset failed.'; return; }
+        finishAuth(data.token, data.user);
+      } catch {
+        errEl.textContent = 'Server error.';
+      }
+    }
+
+    function finishAuth(token, user) {
+      saveSession(token, user);
+      updateUserUI();
+      const next = pendingViewAfterLogin;
+      pendingViewAfterLogin = null;
+      document.getElementById('authModal').style.display = 'none';
+      if (next) switchView(next);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, s => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[s]));
+    }
+
+    // Init
+    startWakeCheck();
+    updateUserUI();
+    loadSiteConfig();
+  </script>
+</body>
+</html>
