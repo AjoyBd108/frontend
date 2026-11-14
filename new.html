@@ -1332,6 +1332,146 @@
     .is-refreshing .spin-ico {
       animation: spin 0.7s linear infinite;
     }
+
+    /* Silent warning inside class chat */
+    .silent-warning {
+      display: none;
+      margin: 0 10px 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #fff4db;
+      border: 1.5px solid #f59e0b;
+      color: #78350f;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.4;
+      animation: fadePageIn 0.22s ease;
+    }
+
+    .silent-warning.show {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    /* AI Tutor star menu */
+    .tutor-bar-wrap {
+      position: relative;
+      background: #fff;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .tutor-bar-wrap .tutor-bar {
+      border-top: none;
+    }
+
+    .star-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid #cbd5e1;
+      background: #fff9e6;
+      color: #d97706;
+      font-size: 18px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.14s ease, background 0.14s ease;
+    }
+
+    .star-btn.open {
+      background: #fef0c7;
+      border-color: #d97706;
+      transform: rotate(15deg);
+    }
+
+    .star-menu {
+      display: none;
+      position: absolute;
+      right: 10px;
+      bottom: 62px;
+      width: 210px;
+      background: #fffdf7;
+      border: 1.8px solid #484a59;
+      border-radius: 18px;
+      padding: 10px 12px;
+      box-shadow: 0 10px 24px rgba(24, 24, 34, 0.16);
+      z-index: 20;
+    }
+
+    .star-menu.open {
+      display: block;
+      animation: fadePageIn 0.18s ease;
+    }
+
+    .star-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 2px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .switch {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .switch-slider {
+      position: absolute;
+      inset: 0;
+      background: #cbd5e1;
+      border-radius: 999px;
+      transition: 0.2s ease;
+    }
+
+    .switch-slider::before {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      left: 3px;
+      top: 3px;
+      border-radius: 50%;
+      background: #fff;
+      transition: 0.2s ease;
+    }
+
+    .switch input:checked + .switch-slider {
+      background: var(--primary);
+    }
+
+    .switch input:checked + .switch-slider::before {
+      transform: translateX(18px);
+    }
+
+    .hint-menu-btn {
+      width: 100%;
+      margin-top: 6px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1.5px solid #484a59;
+      background: #fff5d6;
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -1718,13 +1858,33 @@
           <button type="button" class="btn btn-danger" style="padding: 4px 9px; font-size: 11px;" onclick="clearTutorImage()">Remove</button>
         </div>
 
-        <form class="tutor-bar" onsubmit="sendTutorMessage(event)">
-          <input type="file" id="tutorFileInput" accept="image/*" hidden onchange="handleTutorFile(event)" />
-          <button type="button" class="plus-btn" onclick="document.getElementById('tutorFileInput').click()" title="Upload image">+</button>
-          <input class="input" id="tutorInput" placeholder="Ask a homework question..." autocomplete="off" />
-          <button type="button" class="btn btn-outline" style="padding: 9px 10px; font-size: 11px;" onclick="askSimpler()">Hint+</button>
-          <button type="submit" class="btn btn-primary" style="padding: 9px 12px;">Send</button>
-        </form>
+        <div class="tutor-bar-wrap">
+          <div class="star-menu" id="tutorStarMenu" onclick="event.stopPropagation()">
+            <div class="star-row">
+              <span>Bangla</span>
+              <label class="switch">
+                <input type="checkbox" id="langSwitchBn" onchange="setTutorLang('bn')" />
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+            <div class="star-row">
+              <span>English</span>
+              <label class="switch">
+                <input type="checkbox" id="langSwitchEn" checked onchange="setTutorLang('en')" />
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+            <button type="button" class="hint-menu-btn" onclick="askSimpler()">★ Hint</button>
+          </div>
+
+          <form class="tutor-bar" onsubmit="sendTutorMessage(event)">
+            <input type="file" id="tutorFileInput" accept="image/*" hidden onchange="handleTutorFile(event)" />
+            <button type="button" class="plus-btn" onclick="document.getElementById('tutorFileInput').click()" title="Upload image">+</button>
+            <input class="input" id="tutorInput" placeholder="Ask a homework question..." autocomplete="off" />
+            <button type="button" class="star-btn" id="tutorStarBtn" onclick="toggleTutorMenu(event)" title="Language and Hint">★</button>
+            <button type="submit" class="btn btn-primary" style="padding: 9px 12px;">Send</button>
+          </form>
+        </div>
       </div>
     </main>
 
@@ -1747,7 +1907,7 @@
       <div class="class-banner">
         <span class="badge" id="myClassBadge">CLASS 1</span>
         <h2 id="myClassTitle" style="font-size: 20px; font-weight: 800;">Class Learning Space</h2>
-        <p id="myClassDesc" style="font-size: 12px; color: var(--muted); margin-top: 2px;">Anonymous chat — only nicknames are shown here.</p>
+        <p id="myClassDesc" style="font-size: 12px; color: var(--muted); margin-top: 2px;">Anonymous chat — only mascot names are shown here.</p>
         <div id="myCharacterBox" style="margin-top: 8px; font-size: 12px; font-weight: 800; color: var(--class-color);"></div>
       </div>
 
@@ -1765,8 +1925,12 @@
         <div class="chat-feed" id="classChatFeed">
           <p style="color: var(--muted); font-size: 12px; text-align: center; margin-top: 24px;">Loading class messages...</p>
         </div>
+        <div class="silent-warning" id="classSilentWarning" role="status">
+          <span id="classWarningText"></span>
+          <button type="button" onclick="hideSilentWarning()" style="border: none; background: transparent; font-weight: 800; color: #78350f; cursor: pointer;">✕</button>
+        </div>
         <form class="chat-compose" onsubmit="sendClassMessage(event)">
-          <input class="input" id="classMsgInput" placeholder="Write anonymously with your nickname..." autocomplete="off" required />
+          <input class="input" id="classMsgInput" placeholder="Write anonymously with your mascot..." autocomplete="off" required />
           <button class="btn btn-primary" type="submit">Send</button>
         </form>
       </div>
@@ -2452,12 +2616,12 @@
       enforceAuthGate();
     }
 
-    // Class Community (Anonymous)
+    // Class Community (Mascot Anonymous)
     function setupMyClassDashboard() {
       const user = getUser();
       if (!user) return;
       const lvl = Number(user.class_level);
-      const nickname = user.nickname || user.character_name || 'Friend';
+      const mascot = user.character_name || 'Friend';
       const theme = classThemes.find(t => Number(t.class_level) === lvl) || {};
 
       document.documentElement.style.setProperty('--class-color', theme.theme_color || '#5b4df0');
@@ -2465,8 +2629,8 @@
 
       document.getElementById('myClassBadge').textContent = `CLASS ${lvl}`;
       document.getElementById('myClassTitle').textContent = theme.title || `Class ${lvl} Community`;
-      document.getElementById('myClassDesc').textContent = 'Anonymous chat — only nicknames are shown here.';
-      document.getElementById('myCharacterBox').textContent = `Chatting as: ${nickname}`;
+      document.getElementById('myClassDesc').textContent = 'Anonymous chat — only mascot names are shown here.';
+      document.getElementById('myCharacterBox').textContent = `Chatting as: ${mascot}`;
       document.getElementById('chatHeaderTitle').textContent = `# class-${lvl}-study-room`;
     }
 
@@ -2474,6 +2638,23 @@
     let classMsgSending = false;
     let classFetchController = null;
     let classStatusTimer = null;
+    let classWarnTimer = null;
+
+    function showSilentWarning(msg) {
+      const box = document.getElementById('classSilentWarning');
+      const txt = document.getElementById('classWarningText');
+      if (!box || !txt) return;
+      txt.textContent = msg;
+      box.classList.add('show');
+      clearTimeout(classWarnTimer);
+      classWarnTimer = setTimeout(hideSilentWarning, 7000);
+    }
+
+    function hideSilentWarning() {
+      const box = document.getElementById('classSilentWarning');
+      if (box) box.classList.remove('show');
+      clearTimeout(classWarnTimer);
+    }
 
     async function loadClassMessages(manual) {
       const feed = document.getElementById('classChatFeed');
@@ -2534,7 +2715,7 @@
               <div class="msg-avatar">${getCharacterSvg(m.sender_character, 24)}</div>
               <div style="flex: 1;">
                 <div class="msg-meta">
-                  <span class="msg-author">${escapeHtml(m.sender_nickname || m.sender_character || 'Friend')}</span>
+                  <span class="msg-author">${escapeHtml(m.sender_character || 'Friend')}</span>
                   <span class="msg-school">• ${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
                 <div style="font-size: 13px;">${escapeHtml(m.message)}</div>
@@ -2594,7 +2775,11 @@
           signal: controller.signal
         });
         const data = await res.json().catch(() => ({}));
-        if (res.ok) {
+        if (res.ok && data.filtered) {
+          input.value = '';
+          showSilentWarning(data.warning || 'Gentle Warning: Kind words only!');
+        } else if (res.ok) {
+          hideSilentWarning();
           input.value = '';
           loadClassMessages(true);
         } else {
@@ -2612,6 +2797,51 @@
     }
 
     // AI Tutor
+    let tutorLang = localStorage.getItem('shikkha_tutor_lang') === 'bn' ? 'bn' : 'en';
+
+    function syncTutorLangUI() {
+      const bnEl = document.getElementById('langSwitchBn');
+      const enEl = document.getElementById('langSwitchEn');
+      const inputEl = document.getElementById('tutorInput');
+      if (bnEl) bnEl.checked = tutorLang === 'bn';
+      if (enEl) enEl.checked = tutorLang === 'en';
+      if (inputEl) {
+        inputEl.placeholder = tutorLang === 'bn' ? 'বাংলায় প্রশ্ন লিখো...' : 'Ask a homework question...';
+      }
+    }
+
+    function setTutorLang(lang) {
+      const bnEl = document.getElementById('langSwitchBn');
+      const enEl = document.getElementById('langSwitchEn');
+      if (lang === 'bn') {
+        tutorLang = bnEl && !bnEl.checked ? 'en' : 'bn';
+      } else {
+        tutorLang = enEl && !enEl.checked ? 'bn' : 'en';
+      }
+      localStorage.setItem('shikkha_tutor_lang', tutorLang);
+      syncTutorLangUI();
+    }
+
+    function toggleTutorMenu(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('tutorStarMenu');
+      const btn = document.getElementById('tutorStarBtn');
+      if (!menu || !btn) return;
+      const opening = !menu.classList.contains('open');
+      menu.classList.toggle('open', opening);
+      btn.classList.toggle('open', opening);
+    }
+
+    function closeTutorMenu() {
+      const menu = document.getElementById('tutorStarMenu');
+      const btn = document.getElementById('tutorStarBtn');
+      if (menu) menu.classList.remove('open');
+      if (btn) btn.classList.remove('open');
+    }
+
+    document.addEventListener('click', closeTutorMenu);
+    syncTutorLangUI();
+
     function handleTutorFile(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -2652,6 +2882,8 @@
     async function sendTutorMessage(e, overrideText) {
       if (e) e.preventDefault();
       if (tutorBusy) return;
+      closeTutorMenu();
+
       const input = document.getElementById('tutorInput');
       const text = (overrideText !== undefined ? overrideText : input.value).trim();
       const img = pendingImageDataUrl;
@@ -2665,7 +2897,7 @@
       if (overrideText === undefined) input.value = '';
       clearTutorImage();
 
-      const replyNode = appendTutorBubble('ai', 'Thinking...');
+      const replyNode = appendTutorBubble('ai', tutorLang === 'bn' ? 'ভাবছি...' : 'Thinking...');
       const user = getUser();
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 35000);
@@ -2681,7 +2913,8 @@
             message: text,
             imageDataUrl: img,
             sessionId: tutorSessionId,
-            classLevel: user ? user.class_level : null
+            classLevel: user ? user.class_level : null,
+            language: tutorLang
           }),
           signal: controller.signal
         });
@@ -2701,15 +2934,20 @@
     }
 
     function askSimpler() {
-      sendTutorMessage(null, "I still don't understand. Please explain step-by-step in very simple words.");
+      closeTutorMenu();
+      const prompt = tutorLang === 'bn'
+        ? 'আমি এখনো বুঝতে পারিনি। অনুগ্রহ করে খুব সহজ বাংলায় ধাপে ধাপে বুঝিয়ে দাও।'
+        : "I still don't understand. Please explain step-by-step in very simple words.";
+      sendTutorMessage(null, prompt);
     }
 
     function resetTutorSession() {
       tutorSessionId = 'tut_' + Math.random().toString(36).slice(2, 10);
       localStorage.setItem('shikkha_tutor_sid', tutorSessionId);
-      document.getElementById('tutorFeed').innerHTML = `
-        <div class="bubble ai">Started a fresh chat! Ask any Class 1–5 question or tap + to upload an image.</div>
-      `;
+      const msg = tutorLang === 'bn'
+        ? 'নতুন চ্যাট শুরু হয়েছে! ক্লাস ১–৫ এর যেকোনো প্রশ্ন লিখো বা + চেপে ছবি দাও।'
+        : 'Started a fresh chat! Ask any Class 1–5 question or tap + to upload an image.';
+      document.getElementById('tutorFeed').innerHTML = `<div class="bubble ai">${msg}</div>`;
     }
 
     // Let's Explore (Videos, News, Books)
