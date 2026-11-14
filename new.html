@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -970,6 +972,368 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    /* Page fade-in animation */
+    @keyframes fadePageIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .view.active {
+      animation: fadePageIn 0.3s ease;
+    }
+
+    .explore-subpage {
+      display: none;
+    }
+
+    .explore-subpage.active {
+      display: block;
+      animation: fadePageIn 0.3s ease;
+    }
+
+    /* Let's Explore header & zig-zag boxes */
+    .explore-hero {
+      margin-bottom: 16px;
+    }
+
+    .explore-header {
+      font-family: 'Lora', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+
+    .explore-sub {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .zz-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 22px;
+      padding: 4px 2px;
+    }
+
+    .zz-box {
+      position: relative;
+      width: 82%;
+      border: 2px solid #484a59;
+      border-radius: 22px;
+      padding: 15px 16px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      outline: 1.5px dashed rgba(72, 74, 89, 0.45);
+      outline-offset: -6px;
+      box-shadow: 0 6px 0 rgba(72, 74, 89, 0.16), 0 10px 18px rgba(35, 32, 24, 0.08);
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+      font-family: inherit;
+    }
+
+    .zz-box:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 rgba(72, 74, 89, 0.16);
+    }
+
+    .zz-left {
+      align-self: flex-start;
+    }
+
+    .zz-right {
+      align-self: flex-end;
+    }
+
+    .zz-videos {
+      background-color: #fff6dc;
+      background-image:
+        linear-gradient(90deg, rgba(247, 214, 134, 0.35) 50%, transparent 50%),
+        linear-gradient(rgba(247, 214, 134, 0.35) 50%, transparent 50%);
+      background-size: 18px 18px;
+    }
+
+    .zz-news {
+      background-color: #ffeef2;
+      background-image:
+        linear-gradient(90deg, rgba(244, 179, 196, 0.34) 50%, transparent 50%),
+        linear-gradient(rgba(244, 179, 196, 0.34) 50%, transparent 50%);
+      background-size: 18px 18px;
+    }
+
+    .zz-books {
+      background-color: #eef7f0;
+      background-image:
+        linear-gradient(to right, rgba(149, 198, 165, 0.35) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(149, 198, 165, 0.35) 1px, transparent 1px);
+      background-size: 15px 15px;
+    }
+
+    .zz-ico {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1.6px solid #484a59;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .zz-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(72, 74, 89, 0.25);
+      color: #3a3b47;
+      margin-bottom: 4px;
+    }
+
+    .zz-title {
+      font-family: 'Lora', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.15;
+    }
+
+    .zz-desc {
+      font-size: 12px;
+      font-weight: 600;
+      color: #464857;
+      margin-top: 2px;
+    }
+
+    .zz-arrow {
+      margin-left: auto;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1.5px solid #484a59;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: var(--ink);
+      flex-shrink: 0;
+    }
+
+    .zz-deco-tr {
+      position: absolute;
+      top: -11px;
+      right: 12px;
+      pointer-events: none;
+      line-height: 0;
+    }
+
+    .zz-deco-bl {
+      position: absolute;
+      bottom: -10px;
+      left: 12px;
+      pointer-events: none;
+      line-height: 0;
+    }
+
+    /* Explore sub-pages (Videos, News, Books) */
+    .subpage-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .back-chip {
+      background: #fff;
+      border: 1.5px solid #484a59;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .search-wrap {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .search-wrap .input {
+      padding-left: 36px;
+      padding-right: 36px;
+      border-radius: 999px;
+      border-color: rgba(72, 74, 89, 0.35);
+    }
+
+    .search-ico {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .search-clear {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: #e2e8f0;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      display: none;
+      color: var(--ink);
+    }
+
+    .media-thumb-link {
+      display: block;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1.5px solid rgba(62, 65, 82, 0.22);
+      margin-bottom: 10px;
+      position: relative;
+      background: #f1f5f9;
+    }
+
+    .media-thumb {
+      width: 100%;
+      height: 175px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .play-badge {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(26, 27, 34, 0.82);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    /* Article reader modal */
+    .reader-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 22, 30, 0.58);
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 110;
+    }
+
+    .reader-bg.open {
+      display: flex;
+      animation: fadePageIn 0.22s ease;
+    }
+
+    .reader-sheet {
+      width: 100%;
+      max-width: 440px;
+      max-height: 88dvh;
+      overflow-y: auto;
+      background: #fffdf7;
+      border-radius: 26px 26px 0 0;
+      padding: 20px 18px 28px;
+      border-top: 2px solid #484a59;
+    }
+
+    /* Better Profile UI & Class Refresh */
+    .prof-hero {
+      background: linear-gradient(135deg, var(--class-soft) 0%, #fffdf6 100%);
+      border: 2px solid var(--class-color);
+      border-radius: 22px;
+      padding: 18px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 16px rgba(30, 36, 51, 0.06);
+    }
+
+    .prof-avatar-ring {
+      width: 68px;
+      height: 68px;
+      border-radius: 20px;
+      background: #fff;
+      border: 2px solid #484a59;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .prof-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .prof-stat {
+      background: #f8fafd;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .prof-stat-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .prof-stat-val {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--ink);
+      word-break: break-word;
+    }
+
+    .nick-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .nick-status {
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 6px;
+      min-height: 16px;
+    }
+
+    .spin-ico {
+      display: inline-block;
+    }
+
+    .is-refreshing .spin-ico {
+      animation: spin 0.7s linear infinite;
+    }
   </style>
 </head>
 <body>
@@ -1208,56 +1572,78 @@
       </div>
     </main>
 
-    <!-- SECTION: LEARNING VIEW (AI TUTOR + OLYMPIAD HUB) -->
+    <!-- SECTION: LEARNING VIEW (LET'S EXPLORE + OLYMPIAD HUB) -->
     <main id="viewLearning" class="view">
-      <div class="seg-tabs">
-        <button class="seg-btn active" id="tabTutorBtn" onclick="switchLearningTab('tutor')">AI Tutor</button>
-        <button class="seg-btn" id="tabOlympiadBtn" onclick="switchLearningTab('olympiad')">Olympiad Hub</button>
-      </div>
 
-      <!-- AI Tutor Tab -->
-      <div id="subTutor">
-        <div class="tutor-box">
-          <div class="tutor-head">
-            <div>
-              <div style="font-size: 15px; font-weight: 800;">AI Friend & Tutor</div>
-              <div style="font-size: 11px; opacity: 0.9;">Hint first, then simple step-by-step help</div>
-            </div>
-            <button class="btn btn-outline" style="padding: 5px 10px; font-size: 11px;" onclick="resetTutorSession()">New Chat</button>
-          </div>
-
-          <div class="tutor-feed" id="tutorFeed">
-            <div class="bubble ai">
-              Hi! Tap <strong>+</strong> to scan or upload a homework photo, or type your question below. I will give you a helpful hint first!
-            </div>
-          </div>
-
-          <div class="tutor-preview" id="tutorImagePreview">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <img id="tutorPreviewThumb" src="" alt="Preview" />
-              <span>Image attached</span>
-            </div>
-            <button type="button" class="btn btn-danger" style="padding: 4px 9px; font-size: 11px;" onclick="clearTutorImage()">Remove</button>
-          </div>
-
-          <form class="tutor-bar" onsubmit="sendTutorMessage(event)">
-            <input type="file" id="tutorFileInput" accept="image/*" hidden onchange="handleTutorFile(event)" />
-            <button type="button" class="plus-btn" onclick="document.getElementById('tutorFileInput').click()" title="Upload image">+</button>
-            <input class="input" id="tutorInput" placeholder="Ask a homework question..." autocomplete="off" />
-            <button type="button" class="btn btn-outline" style="padding: 9px 10px; font-size: 11px;" onclick="askSimpler()">Hint+</button>
-            <button type="submit" class="btn btn-primary" style="padding: 9px 12px;">Send</button>
-          </form>
+      <!-- Landing page: Let's explore + 3 zig-zag boxes + Olympiad Hub -->
+      <div id="exploreHubPage" class="explore-subpage active">
+        <div class="explore-hero">
+          <h1 class="explore-header">Let's explore</h1>
+          <p class="explore-sub">Pick a fun box or check Olympiad updates below</p>
         </div>
-      </div>
 
-      <!-- Olympiad Hub Tab -->
-      <div id="subOlympiad" style="display: none;">
+        <div class="zz-stack">
+          <button type="button" class="zz-box zz-left zz-videos" onclick="openExploreSection('videos')">
+            <span class="zz-deco-tr">
+              <svg width="24" height="24" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="6" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="19" cy="11" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="17" cy="18" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="9" cy="18" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="7" cy="11" r="4" fill="#fbe0b5" stroke="#484a59" stroke-width="1.2"/><circle cx="13" cy="13" r="3" fill="#fff7d6" stroke="#484a59" stroke-width="1.2"/></svg>
+            </span>
+            <div class="zz-ico">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <rect x="3" y="6" width="22" height="16" rx="4" fill="#ffd269" stroke="#484a59" stroke-width="1.8"/>
+                <polygon points="12,10 19,14 12,18" fill="#df5b5b" stroke="#484a59" stroke-width="1.3" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <span class="zz-tag">WATCH &amp; LEARN</span>
+              <div class="zz-title">Videos</div>
+              <div class="zz-desc">Fun video lessons with smart search</div>
+            </div>
+            <span class="zz-arrow">→</span>
+          </button>
+
+          <button type="button" class="zz-box zz-right zz-news" onclick="openExploreSection('news')">
+            <span class="zz-deco-bl">
+              <svg width="28" height="18" viewBox="0 0 42 24" fill="none"><path d="M18 12 C8 4, 2 8, 4 15 C6 20, 14 16, 18 13 Z" fill="#fad2dc" stroke="#484a59" stroke-width="1.8"/><path d="M24 12 C34 4, 40 8, 38 15 C36 20, 28 16, 24 13 Z" fill="#fad2dc" stroke="#484a59" stroke-width="1.8"/><circle cx="21" cy="12" r="3.5" fill="#fff" stroke="#484a59" stroke-width="1.8"/></svg>
+            </span>
+            <div class="zz-ico">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <rect x="4" y="5" width="20" height="18" rx="3" fill="#fff" stroke="#484a59" stroke-width="1.8"/>
+                <rect x="7" y="8" width="8" height="6" rx="1" fill="#f3a6b8"/>
+                <path d="M17 9 H21 M17 12 H21 M7 17 H21 M7 20 H16" stroke="#484a59" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <span class="zz-tag">READ STORIES</span>
+              <div class="zz-title">News</div>
+              <div class="zz-desc">Latest kids news &amp; full articles</div>
+            </div>
+            <span class="zz-arrow">→</span>
+          </button>
+
+          <button type="button" class="zz-box zz-left zz-books" onclick="openExploreSection('books')">
+            <span class="zz-deco-tr">
+              <svg width="24" height="24" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="6" r="4" fill="#cde8d6" stroke="#484a59" stroke-width="1.2"/><circle cx="19" cy="11" r="4" fill="#cde8d6" stroke="#484a59" stroke-width="1.2"/><circle cx="17" cy="18" r="4" fill="#cde8d6" stroke="#484a59" stroke-width="1.2"/><circle cx="9" cy="18" r="4" fill="#cde8d6" stroke="#484a59" stroke-width="1.2"/><circle cx="7" cy="11" r="4" fill="#cde8d6" stroke="#484a59" stroke-width="1.2"/><circle cx="13" cy="13" r="3" fill="#fff7d6" stroke="#484a59" stroke-width="1.2"/></svg>
+            </span>
+            <div class="zz-ico">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <path d="M4 7 C8 6, 12 7, 14 9 C16 7, 20 6, 24 7 V21 C20 20, 16 21, 14 23 C12 21, 8 20, 4 21 Z" fill="#dff2e4" stroke="#484a59" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M14 9 V23" stroke="#484a59" stroke-width="1.6"/>
+              </svg>
+            </div>
+            <div>
+              <span class="zz-tag">STORY CORNER</span>
+              <div class="zz-title">Books</div>
+              <div class="zz-desc">Book list with quick read links</div>
+            </div>
+            <span class="zz-arrow">→</span>
+          </button>
+        </div>
+
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-          <h2 style="font-size: 20px; font-weight: 800;">Olympiad & ECA News</h2>
+          <h2 style="font-size: 20px; font-weight: 800;">Olympiad Hub</h2>
           <button class="btn btn-outline" style="padding: 6px 10px; font-size: 12px;" onclick="loadOlympiadPosts()">↻ Refresh</button>
         </div>
 
-        <!-- Admin composer (only visible if role === 'admin') -->
         <div class="soft-card" id="adminOlympiadBox" style="display: none; margin-bottom: 14px; border-color: var(--primary);">
           <h3 style="font-size: 15px; margin-bottom: 8px;">Admin: Publish Update</h3>
           <form onsubmit="createOlympiadPost(event)">
@@ -1288,27 +1674,135 @@
           <p style="font-size: 13px; color: var(--muted);">Loading updates...</p>
         </div>
       </div>
+
+      <!-- Sub-page 1: Videos -->
+      <div id="exploreVideosPage" class="explore-subpage">
+        <div class="subpage-head">
+          <button type="button" class="back-chip" onclick="openExploreSection('hub')">← Back</button>
+          <h2 style="font-size: 20px; font-weight: 800; flex: 1;">Videos</h2>
+          <button type="button" class="btn btn-outline" style="padding: 6px 10px; font-size: 12px;" onclick="loadExploreContent(true)">↻ Refresh</button>
+        </div>
+
+        <div class="search-wrap">
+          <span class="search-ico">🔍</span>
+          <input class="input" id="videoSearchInput" placeholder="Search video title, topic, or type..." oninput="filterVideos()" />
+          <button type="button" class="search-clear" id="videoSearchClear" onclick="clearVideoSearch()">✕</button>
+        </div>
+
+        <div class="filter-row" id="videoTypeFilters">
+          <button class="pill active" onclick="selectVideoType('All')">All</button>
+        </div>
+
+        <div id="videosGrid" style="display: flex; flex-direction: column; gap: 12px;">
+          <p style="font-size: 13px; color: var(--muted);">Loading videos...</p>
+        </div>
+      </div>
+
+      <!-- Sub-page 2: News -->
+      <div id="exploreNewsPage" class="explore-subpage">
+        <div class="subpage-head">
+          <button type="button" class="back-chip" onclick="openExploreSection('hub')">← Back</button>
+          <h2 style="font-size: 20px; font-weight: 800; flex: 1;">News</h2>
+          <button type="button" class="btn btn-outline" style="padding: 6px 10px; font-size: 12px;" onclick="loadExploreContent(true)">↻ Refresh</button>
+        </div>
+
+        <div id="newsGrid" style="display: flex; flex-direction: column; gap: 12px;">
+          <p style="font-size: 13px; color: var(--muted);">Loading news...</p>
+        </div>
+      </div>
+
+      <!-- Sub-page 3: Books (No thumbnails, only book name + description + read button) -->
+      <div id="exploreBooksPage" class="explore-subpage">
+        <div class="subpage-head">
+          <button type="button" class="back-chip" onclick="openExploreSection('hub')">← Back</button>
+          <h2 style="font-size: 20px; font-weight: 800; flex: 1;">Books</h2>
+          <button type="button" class="btn btn-outline" style="padding: 6px 10px; font-size: 12px;" onclick="loadExploreContent(true)">↻ Refresh</button>
+        </div>
+
+        <div id="booksGrid" style="display: flex; flex-direction: column; gap: 12px;">
+          <p style="font-size: 13px; color: var(--muted);">Loading books...</p>
+        </div>
+      </div>
     </main>
+
+    <!-- SECTION: HOME AI TUTOR VIEW (For Home homework buttons) -->
+    <main id="viewTutor" class="view">
+      <div class="subpage-head">
+        <button type="button" class="back-chip" onclick="switchView('home')">← Home</button>
+        <h2 style="font-size: 20px; font-weight: 800;">Homework Helper</h2>
+      </div>
+      <div class="tutor-box">
+        <div class="tutor-head">
+          <div>
+            <div style="font-size: 15px; font-weight: 800;">AI Friend &amp; Tutor</div>
+            <div style="font-size: 11px; opacity: 0.9;">Hint first, then simple step-by-step help</div>
+          </div>
+          <button class="btn btn-outline" style="padding: 5px 10px; font-size: 11px;" onclick="resetTutorSession()">New Chat</button>
+        </div>
+
+        <div class="tutor-feed" id="tutorFeed">
+          <div class="bubble ai">
+            Hi! Tap <strong>+</strong> to scan or upload a homework photo, or type your question below. I will give you a helpful hint first!
+          </div>
+        </div>
+
+        <div class="tutor-preview" id="tutorImagePreview">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <img id="tutorPreviewThumb" src="" alt="Preview" />
+            <span>Image attached</span>
+          </div>
+          <button type="button" class="btn btn-danger" style="padding: 4px 9px; font-size: 11px;" onclick="clearTutorImage()">Remove</button>
+        </div>
+
+        <form class="tutor-bar" onsubmit="sendTutorMessage(event)">
+          <input type="file" id="tutorFileInput" accept="image/*" hidden onchange="handleTutorFile(event)" />
+          <button type="button" class="plus-btn" onclick="document.getElementById('tutorFileInput').click()" title="Upload image">+</button>
+          <input class="input" id="tutorInput" placeholder="Ask a homework question..." autocomplete="off" />
+          <button type="button" class="btn btn-outline" style="padding: 9px 10px; font-size: 11px;" onclick="askSimpler()">Hint+</button>
+          <button type="submit" class="btn btn-primary" style="padding: 9px 12px;">Send</button>
+        </form>
+      </div>
+    </main>
+
+    <!-- News Article Reader Sheet -->
+    <div class="reader-bg" id="newsReaderModal" onclick="if (event.target === this) closeNewsArticle()">
+      <div class="reader-sheet">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <span class="badge" id="readerDate" style="margin-bottom: 0;">NEWS</span>
+          <button type="button" class="back-chip" onclick="closeNewsArticle()">✕ Close</button>
+        </div>
+        <img id="readerThumb" class="media-thumb" src="" alt="" style="display: none; margin-bottom: 12px;" />
+        <h2 id="readerTitle" style="font-family: 'Lora', serif; font-size: 22px; margin-bottom: 10px;"></h2>
+        <div id="readerBody" style="font-size: 14px; line-height: 1.65; color: var(--ink); white-space: pre-wrap; margin-bottom: 16px;"></div>
+        <a id="readerExtLink" class="btn btn-primary" href="#" target="_blank" rel="noopener" style="display: none; width: 100%; text-decoration: none;">Open Source Link →</a>
+      </div>
+    </div>
 
     <!-- SECTION: MY CLASS VIEW -->
     <main id="viewMyClass" class="view">
       <div class="class-banner">
         <span class="badge" id="myClassBadge">CLASS 1</span>
         <h2 id="myClassTitle" style="font-size: 20px; font-weight: 800;">Class Learning Space</h2>
-        <p id="myClassDesc" style="font-size: 12px; color: var(--muted); margin-top: 2px;">Only classmates in your class can chat here.</p>
+        <p id="myClassDesc" style="font-size: 12px; color: var(--muted); margin-top: 2px;">Anonymous chat — only nicknames are shown here.</p>
         <div id="myCharacterBox" style="margin-top: 8px; font-size: 12px; font-weight: 800; color: var(--class-color);"></div>
       </div>
 
       <div class="chat-box">
         <div class="chat-head">
           <span id="chatHeaderTitle"># Class Community</span>
-          <button class="btn btn-outline" style="padding: 5px 10px; font-size: 11px;" onclick="loadClassMessages()">↻ Refresh</button>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="classRefreshStatus" style="font-size: 11px; font-weight: 600; color: var(--muted);"></span>
+            <button type="button" class="btn btn-outline" id="classRefreshBtn" style="padding: 5px 10px; font-size: 11px;" onclick="loadClassMessages(true)">
+              <span class="spin-ico">↻</span>
+              <span>Refresh</span>
+            </button>
+          </div>
         </div>
         <div class="chat-feed" id="classChatFeed">
           <p style="color: var(--muted); font-size: 12px; text-align: center; margin-top: 24px;">Loading class messages...</p>
         </div>
         <form class="chat-compose" onsubmit="sendClassMessage(event)">
-          <input class="input" id="classMsgInput" placeholder="Write to your classmates..." autocomplete="off" required />
+          <input class="input" id="classMsgInput" placeholder="Write anonymously with your nickname..." autocomplete="off" required />
           <button class="btn btn-primary" type="submit">Send</button>
         </form>
       </div>
@@ -1316,7 +1810,7 @@
 
     <!-- SECTION: PROFILE & ABOUT VIEW -->
     <main id="viewProfile" class="view">
-      <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 14px;">Student Profile</h2>
+      <h2 style="font-family: 'Lora', serif; font-size: 26px; font-weight: 700; margin-bottom: 14px;">Student Profile</h2>
 
       <div class="soft-card" id="profileLoggedOutBox">
         <h3 style="font-size: 17px; margin-bottom: 6px;">Sign In or Create Account</h3>
@@ -1329,19 +1823,54 @@
         </div>
       </div>
 
-      <div class="soft-card" id="profileLoggedInBox" style="display: none;">
-        <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
-          <div id="profEmoji" style="width: 52px; height: 46px; display: flex; align-items: center; justify-content: center;"></div>
-          <div>
-            <h3 id="profName" style="font-size: 19px;">Student</h3>
-            <div id="profMeta" style="font-size: 12px; font-weight: 700; color: var(--primary);">Class 1</div>
+      <div id="profileLoggedInBox" style="display: none;">
+        <div class="prof-hero">
+          <div class="prof-avatar-ring" id="profEmoji"></div>
+          <div style="flex: 1;">
+            <span class="badge" id="profMeta" style="margin-bottom: 4px;">Class 1</span>
+            <h3 id="profNickname" style="font-family: 'Lora', serif; font-size: 22px; line-height: 1.15;">Friend</h3>
+            <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-top: 2px;">
+              Mascot: <span id="profCharName">Friend</span>
+            </div>
           </div>
         </div>
-        <div style="font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px;">
-          <div><strong>Character:</strong> <span id="profCharName">Friend</span></div>
-          <div><strong>School:</strong> <span id="profSchool">-</span></div>
-          <div><strong>Email:</strong> <span id="profEmail">-</span></div>
+
+        <div class="soft-card" style="margin-bottom: 14px;">
+          <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">Anonymous Chat Nickname</h3>
+          <p style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">
+            Only this nickname shows up in your Class chat. Your real name and school stay hidden.
+          </p>
+          <form onsubmit="saveNickname(event)">
+            <div class="nick-row">
+              <input class="input" id="nicknameInput" maxlength="24" placeholder="Enter your nickname..." required />
+              <button type="submit" class="btn btn-primary" id="saveNicknameBtn" style="flex-shrink: 0;">Save</button>
+            </div>
+            <div class="nick-status" id="nickStatus"></div>
+          </form>
         </div>
+
+        <div class="soft-card" style="margin-bottom: 14px;">
+          <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 10px;">Student Details (Private)</h3>
+          <div class="prof-grid" style="margin-bottom: 0;">
+            <div class="prof-stat">
+              <div class="prof-stat-label">Full Name</div>
+              <div class="prof-stat-val" id="profName">Student</div>
+            </div>
+            <div class="prof-stat">
+              <div class="prof-stat-label">Class</div>
+              <div class="prof-stat-val" id="profClass">Class 1</div>
+            </div>
+            <div class="prof-stat">
+              <div class="prof-stat-label">School</div>
+              <div class="prof-stat-val" id="profSchool">-</div>
+            </div>
+            <div class="prof-stat">
+              <div class="prof-stat-label">Email</div>
+              <div class="prof-stat-val" id="profEmail">-</div>
+            </div>
+          </div>
+        </div>
+
         <button class="btn btn-danger" style="width: 100%;" onclick="logout()">Log Out</button>
       </div>
 
@@ -1792,12 +2321,16 @@
       } else if (name === 'learning') {
         document.getElementById('viewLearning').classList.add('active');
         document.getElementById('navLearning').classList.add('active');
+        openExploreSection('hub');
+        loadOlympiadPosts();
+      } else if (name === 'tutor') {
+        document.getElementById('viewTutor').classList.add('active');
       } else if (name === 'myclass') {
         document.getElementById('viewMyClass').classList.add('active');
         document.getElementById('navMyClass').classList.add('active');
         setupMyClassDashboard();
-        loadClassMessages();
-        classPollTimer = setInterval(loadClassMessages, 5000);
+        loadClassMessages(true);
+        classPollTimer = setInterval(() => loadClassMessages(false), 5000);
       } else if (name === 'profile') {
         document.getElementById('viewProfile').classList.add('active');
         document.getElementById('navProfile').classList.add('active');
@@ -1805,23 +2338,29 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function switchLearningTab(tab) {
-      const isTutor = tab === 'tutor';
-      document.getElementById('subTutor').style.display = isTutor ? 'block' : 'none';
-      document.getElementById('subOlympiad').style.display = isTutor ? 'none' : 'block';
-      document.getElementById('tabTutorBtn').classList.toggle('active', isTutor);
-      document.getElementById('tabOlympiadBtn').classList.toggle('active', !isTutor);
-      if (!isTutor) loadOlympiadPosts();
+    function openExploreSection(section) {
+      const map = {
+        hub: 'exploreHubPage',
+        videos: 'exploreVideosPage',
+        news: 'exploreNewsPage',
+        books: 'exploreBooksPage'
+      };
+      Object.values(map).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('active');
+      });
+      const target = document.getElementById(map[section] || map.hub);
+      if (target) target.classList.add('active');
+      if (section !== 'hub') loadExploreContent();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function openOlympiadTab() {
       switchView('learning');
-      switchLearningTab('olympiad');
     }
 
     function openTutorText() {
-      switchView('learning');
-      switchLearningTab('tutor');
+      switchView('tutor');
       setTimeout(() => document.getElementById('tutorInput').focus(), 120);
     }
 
@@ -1833,8 +2372,7 @@
         pendingImageDataUrl = reader.result;
         document.getElementById('tutorPreviewThumb').src = pendingImageDataUrl;
         document.getElementById('tutorImagePreview').style.display = 'flex';
-        switchView('learning');
-        switchLearningTab('tutor');
+        switchView('tutor');
       };
       reader.readAsDataURL(file);
       e.target.value = '';
@@ -1850,23 +2388,26 @@
       switchView('myclass');
     }
 
-   function updateUserUI() {
+    function updateUserUI() {
       const user = getUser();
       const loggedIn = Boolean(user && getToken());
       const adminBox = document.getElementById('adminOlympiadBox');
 
       if (loggedIn) {
-        const displayName = user.name || 'Friend';
+        const nickname = user.nickname || user.character_name || user.name || 'Friend';
         applyClassTheme(user.class_level);
-        document.getElementById('helloName').textContent = `Hello, ${displayName}!`;
+        document.getElementById('helloName').textContent = `Hello, ${nickname}!`;
         document.getElementById('homeAvatarEmoji').innerHTML = getCharacterSvg(user.character_name, 60);
-        document.getElementById('homeAvatarName').textContent = displayName.toUpperCase();
+        document.getElementById('homeAvatarName').textContent = nickname.toUpperCase();
         document.getElementById('homeClassLabel').textContent = `CLASS ${user.class_level}`;
 
         document.getElementById('profileLoggedOutBox').style.display = 'none';
         document.getElementById('profileLoggedInBox').style.display = 'block';
-        document.getElementById('profEmoji').innerHTML = getCharacterSvg(user.character_name, 50);
-        document.getElementById('profName').textContent = displayName;
+        document.getElementById('profEmoji').innerHTML = getCharacterSvg(user.character_name, 54);
+        document.getElementById('profNickname').textContent = nickname;
+        document.getElementById('nicknameInput').value = nickname;
+        document.getElementById('profName').textContent = user.name || 'Student';
+        document.getElementById('profClass').textContent = `Class ${user.class_level}`;
         document.getElementById('profMeta').textContent = `Class ${user.class_level} • Age ${user.age || '-'}`;
         document.getElementById('profCharName').textContent = user.character_name || 'Friend';
         document.getElementById('profSchool').textContent = user.school || '-';
@@ -1885,6 +2426,58 @@
       }
     }
 
+    async function saveNickname(e) {
+      e.preventDefault();
+      const input = document.getElementById('nicknameInput');
+      const btn = document.getElementById('saveNicknameBtn');
+      const status = document.getElementById('nickStatus');
+      const nickname = input.value.trim();
+
+      if (nickname.length < 2 || nickname.length > 24) {
+        status.style.color = 'var(--danger)';
+        status.textContent = 'Nickname must be 2 to 24 characters.';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+      status.textContent = '';
+
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/nickname`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getToken()}`
+          },
+          body: JSON.stringify({ nickname }),
+          signal: controller.signal
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.user) {
+          status.style.color = 'var(--danger)';
+          status.textContent = data.error || 'Could not update nickname.';
+          return;
+        }
+        saveSession(getToken(), data.user);
+        updateUserUI();
+        setupMyClassDashboard();
+        status.style.color = '#166534';
+        status.textContent = 'Nickname saved!';
+      } catch (err) {
+        status.style.color = 'var(--danger)';
+        status.textContent = err && err.name === 'AbortError'
+          ? 'Server took too long. Please try again.'
+          : 'Connection error. Please try again.';
+      } finally {
+        clearTimeout(timer);
+        btn.disabled = false;
+        btn.textContent = 'Save';
+      }
+    }
+
     function enforceAuthGate() {
       const loggedIn = Boolean(getUser() && getToken());
       const closeBtn = document.querySelector('#authModal .modal-close');
@@ -1899,11 +2492,12 @@
       enforceAuthGate();
     }
 
-    // Class Community
+    // Class Community (Anonymous)
     function setupMyClassDashboard() {
       const user = getUser();
       if (!user) return;
       const lvl = Number(user.class_level);
+      const nickname = user.nickname || user.character_name || 'Friend';
       const theme = classThemes.find(t => Number(t.class_level) === lvl) || {};
 
       document.documentElement.style.setProperty('--class-color', theme.theme_color || '#5b4df0');
@@ -1911,30 +2505,48 @@
 
       document.getElementById('myClassBadge').textContent = `CLASS ${lvl}`;
       document.getElementById('myClassTitle').textContent = theme.title || `Class ${lvl} Community`;
-      document.getElementById('myClassDesc').textContent = theme.description || `Exclusive chat for Class ${lvl} students.`;
-      document.getElementById('myCharacterBox').textContent = `${user.character_name || 'Friend'} (${user.name})`;
+      document.getElementById('myClassDesc').textContent = 'Anonymous chat — only nicknames are shown here.';
+      document.getElementById('myCharacterBox').textContent = `Chatting as: ${nickname}`;
       document.getElementById('chatHeaderTitle').textContent = `# class-${lvl}-study-room`;
     }
 
     let classMsgsLoading = false;
     let classMsgSending = false;
+    let classFetchController = null;
+    let classStatusTimer = null;
 
-    async function loadClassMessages() {
+    async function loadClassMessages(manual) {
       const feed = document.getElementById('classChatFeed');
+      const refreshBtn = document.getElementById('classRefreshBtn');
+      const statusEl = document.getElementById('classRefreshStatus');
       const token = getToken();
+
       if (!token) {
         feed.innerHTML = `<p style="color: var(--muted); font-size: 12px; text-align: center; margin-top: 24px;">Please log in to view class messages.</p>`;
         return;
       }
-      if (classMsgsLoading) return;
-      classMsgsLoading = true;
 
+      if (manual && classFetchController) {
+        classFetchController.abort();
+      } else if (classMsgsLoading) {
+        return;
+      }
+
+      classMsgsLoading = true;
       const controller = new AbortController();
+      classFetchController = controller;
       const timer = setTimeout(() => controller.abort(), 15000);
+
+      if (manual && refreshBtn) {
+        refreshBtn.classList.add('is-refreshing');
+        refreshBtn.disabled = true;
+        if (statusEl) statusEl.textContent = 'Updating...';
+      }
 
       try {
         const res = await fetch(`${API_BASE}/api/class/messages`, {
           headers: { 'Authorization': `Bearer ${token}` },
+          cache: 'no-store',
           signal: controller.signal
         });
         const data = await res.json().catch(() => ({}));
@@ -1946,29 +2558,39 @@
           return;
         }
         if (!res.ok) {
-          feed.innerHTML = `<p style="color: var(--danger); font-size: 12px; text-align: center;">${escapeHtml(data.error || 'Could not load messages.')}</p>`;
+          if (statusEl) statusEl.textContent = 'Failed';
+          if (!feed.querySelector('.msg-row')) {
+            feed.innerHTML = `<p style="color: var(--danger); font-size: 12px; text-align: center;">${escapeHtml(data.error || 'Could not load messages.')}</p>`;
+          }
           return;
         }
         const messages = data.messages || [];
         if (!messages.length) {
           feed.innerHTML = `<p style="color: var(--muted); font-size: 12px; text-align: center; margin-top: 24px;">No messages yet in Class ${escapeHtml(data.class_level)}. Say hello!</p>`;
-          return;
-        }
-        feed.innerHTML = messages.map(m => `
-          <div class="msg-row">
-            <div class="msg-avatar">${getCharacterSvg(m.sender_character, 24)}</div>
-            <div style="flex: 1;">
-              <div class="msg-meta">
-                <span class="msg-author">${escapeHtml(m.sender_name)}</span>
-                <span class="msg-school">${escapeHtml(m.sender_school || '')}</span>
-                <span class="msg-school">• ${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+        } else {
+          const nearBottom = feed.scrollHeight - feed.scrollTop - feed.clientHeight < 60;
+          feed.innerHTML = messages.map(m => `
+            <div class="msg-row">
+              <div class="msg-avatar">${getCharacterSvg(m.sender_character, 24)}</div>
+              <div style="flex: 1;">
+                <div class="msg-meta">
+                  <span class="msg-author">${escapeHtml(m.sender_nickname || m.sender_character || 'Friend')}</span>
+                  <span class="msg-school">• ${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+                <div style="font-size: 13px;">${escapeHtml(m.message)}</div>
               </div>
-              <div style="font-size: 13px;">${escapeHtml(m.message)}</div>
             </div>
-          </div>
-        `).join('');
-        feed.scrollTop = feed.scrollHeight;
+          `).join('');
+          if (manual || nearBottom) feed.scrollTop = feed.scrollHeight;
+        }
+        if (manual && statusEl) {
+          statusEl.textContent = 'Updated';
+          clearTimeout(classStatusTimer);
+          classStatusTimer = setTimeout(() => { statusEl.textContent = ''; }, 2000);
+        }
       } catch (err) {
+        if (err && err.name === 'AbortError' && manual && classFetchController !== controller) return;
+        if (manual && statusEl) statusEl.textContent = 'Retry';
         if (!feed.querySelector('.msg-row')) {
           const msg = err && err.name === 'AbortError'
             ? 'Server took too long. Tap Refresh.'
@@ -1977,7 +2599,14 @@
         }
       } finally {
         clearTimeout(timer);
-        classMsgsLoading = false;
+        if (classFetchController === controller) {
+          classMsgsLoading = false;
+          classFetchController = null;
+          if (refreshBtn) {
+            refreshBtn.classList.remove('is-refreshing');
+            refreshBtn.disabled = false;
+          }
+        }
       }
     }
 
@@ -2007,7 +2636,7 @@
         const data = await res.json().catch(() => ({}));
         if (res.ok) {
           input.value = '';
-          loadClassMessages();
+          loadClassMessages(true);
         } else {
           alert(data.error || 'Could not send message.');
         }
@@ -2123,6 +2752,248 @@
       `;
     }
 
+    // Let's Explore (Videos, News, Books)
+    let exploreVideos = [];
+    let exploreNews = [];
+    let exploreBooks = [];
+    let exploreLoaded = false;
+    let activeVideoType = 'All';
+
+    function safeUrl(url) {
+      try {
+        const u = new URL(String(url || '').trim());
+        return (u.protocol === 'https:' || u.protocol === 'http:') ? u.href : '#';
+      } catch {
+        return '#';
+      }
+    }
+
+    async function loadExploreContent(force) {
+      if (exploreLoaded && !force) return;
+      const vGrid = document.getElementById('videosGrid');
+      const nGrid = document.getElementById('newsGrid');
+      const bGrid = document.getElementById('booksGrid');
+
+      if (force) {
+        vGrid.innerHTML = `<p style="font-size: 13px; color: var(--muted);">Loading videos...</p>`;
+        nGrid.innerHTML = `<p style="font-size: 13px; color: var(--muted);">Loading news...</p>`;
+        bGrid.innerHTML = `<p style="font-size: 13px; color: var(--muted);">Loading books...</p>`;
+      }
+
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
+      try {
+        const res = await fetch(`${API_BASE}/api/explore`, { cache: 'no-store', signal: controller.signal });
+        const data = await res.json().catch(() => null);
+        if (!res.ok || !data) {
+          const msg = (data && data.error) ? escapeHtml(data.error) : 'Could not load explore items.';
+          vGrid.innerHTML = nGrid.innerHTML = bGrid.innerHTML = `<p style="color: var(--danger); font-size: 13px;">${msg}</p>`;
+          return;
+        }
+        exploreVideos = Array.isArray(data.videos) ? data.videos : [];
+        exploreNews = Array.isArray(data.news) ? data.news : [];
+        exploreBooks = Array.isArray(data.books) ? data.books : [];
+        exploreLoaded = true;
+
+        renderVideoTypePills();
+        renderVideos();
+        renderNews();
+        renderBooks();
+      } catch (err) {
+        const msg = err && err.name === 'AbortError'
+          ? 'Server took too long. Tap Refresh.'
+          : 'Could not reach server.';
+        vGrid.innerHTML = nGrid.innerHTML = bGrid.innerHTML = `<p style="color: var(--danger); font-size: 13px;">${msg}</p>`;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    function renderVideoTypePills() {
+      const box = document.getElementById('videoTypeFilters');
+      const seen = new Set();
+      const types = ['All'];
+      exploreVideos.forEach(v => {
+        const t = String(v.video_type || '').trim();
+        if (t && !seen.has(t.toLowerCase())) {
+          seen.add(t.toLowerCase());
+          types.push(t);
+        }
+      });
+      if (!types.some(t => t.toLowerCase() === activeVideoType.toLowerCase())) activeVideoType = 'All';
+
+      box.innerHTML = types.map(t => {
+        const active = t.toLowerCase() === activeVideoType.toLowerCase() ? ' active' : '';
+        return `<button type="button" class="pill${active}" onclick="selectVideoType('${escapeHtml(t)}')">${escapeHtml(t)}</button>`;
+      }).join('');
+    }
+
+    function selectVideoType(type) {
+      activeVideoType = type;
+      renderVideoTypePills();
+      renderVideos();
+    }
+
+    function clearVideoSearch() {
+      document.getElementById('videoSearchInput').value = '';
+      filterVideos();
+    }
+
+    function filterVideos() {
+      const val = document.getElementById('videoSearchInput').value;
+      document.getElementById('videoSearchClear').style.display = val.trim() ? 'block' : 'none';
+      renderVideos();
+    }
+
+    // Small typo tolerance for young students
+    function wordEditDistance(a, b) {
+      if (Math.abs(a.length - b.length) > 2) return 99;
+      const dp = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+      for (let j = 1; j <= b.length; j++) dp[0][j] = j;
+      for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+          dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+        }
+      }
+      return dp[a.length][b.length];
+    }
+
+    function smartVideoScore(video, words, fullQuery) {
+      if (!fullQuery) return 1;
+      const title = String(video.title || '').toLowerCase();
+      const type = String(video.video_type || '').toLowerCase();
+      const desc = String(video.description || '').toLowerCase();
+      const cls = String(video.target_classes || '').toLowerCase();
+      const allText = `${title} ${type} ${desc} ${cls}`;
+      const hayWords = allText.split(/[^a-z0-9]+/).filter(Boolean);
+
+      let score = title.includes(fullQuery) ? 40 : (allText.includes(fullQuery) ? 20 : 0);
+      for (const w of words) {
+        if (title.startsWith(w)) { score += 25; continue; }
+        if (title.includes(w)) { score += 18; continue; }
+        if (type.includes(w)) { score += 15; continue; }
+        if (allText.includes(w)) { score += 10; continue; }
+        if (w.length >= 3) {
+          const maxErr = w.length >= 6 ? 2 : 1;
+          const fuzzy = hayWords.some(hw => hw.startsWith(w) || wordEditDistance(w, hw) <= maxErr);
+          if (fuzzy) { score += 6; continue; }
+        }
+        return 0;
+      }
+      return score;
+    }
+
+    function renderVideos() {
+      const grid = document.getElementById('videosGrid');
+      const q = document.getElementById('videoSearchInput').value.trim().toLowerCase();
+      const words = q.split(/\s+/).filter(Boolean);
+
+      const filtered = exploreVideos
+        .filter(v => activeVideoType === 'All' || String(v.video_type || '').toLowerCase() === activeVideoType.toLowerCase())
+        .map(v => ({ video: v, score: smartVideoScore(v, words, q) }))
+        .filter(item => item.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .map(item => item.video);
+
+      if (!filtered.length) {
+        grid.innerHTML = `<p style="color: var(--muted); font-size: 13px;">No matching videos found.</p>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(v => {
+        const link = safeUrl(v.video_url);
+        const thumb = safeUrl(v.thumbnail_url);
+        return `
+          <div class="soft-card">
+            ${thumb !== '#' ? `
+              <a class="media-thumb-link" href="${link}" target="_blank" rel="noopener">
+                <img class="media-thumb" src="${thumb}" alt="${escapeHtml(v.title)}" />
+                <span class="play-badge">▶ Watch Video</span>
+              </a>` : ''}
+            <span class="badge">${escapeHtml(v.video_type || 'Video')}${v.target_classes ? ` • ${escapeHtml(v.target_classes)}` : ''}</span>
+            <h3 style="font-size: 16px; margin-bottom: 4px;">${escapeHtml(v.title)}</h3>
+            <p style="font-size: 12px; color: var(--muted); line-height: 1.45;">${escapeHtml(v.description)}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderNews() {
+      const grid = document.getElementById('newsGrid');
+      if (!exploreNews.length) {
+        grid.innerHTML = `<p style="color: var(--muted); font-size: 13px;">No news articles added yet.</p>`;
+        return;
+      }
+
+      grid.innerHTML = exploreNews.map((n, idx) => {
+        const thumb = safeUrl(n.thumbnail_url);
+        return `
+          <div class="soft-card">
+            ${thumb !== '#' ? `<img class="media-thumb" src="${thumb}" alt="${escapeHtml(n.title)}" style="border-radius: 12px; margin-bottom: 10px;" />` : ''}
+            ${n.published_date ? `<span class="badge">${escapeHtml(n.published_date)}</span>` : ''}
+            <h3 style="font-size: 16px; margin-bottom: 4px;">${escapeHtml(n.title)}</h3>
+            <p style="font-size: 12px; color: var(--muted); line-height: 1.45; margin-bottom: 10px;">${escapeHtml(n.description)}</p>
+            <button type="button" class="btn btn-primary" style="padding: 7px 14px; font-size: 12px;" onclick="openNewsArticle(${idx})">Read more →</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openNewsArticle(idx) {
+      const item = exploreNews[idx];
+      if (!item) return;
+
+      const thumbEl = document.getElementById('readerThumb');
+      const thumb = safeUrl(item.thumbnail_url);
+      if (thumb !== '#') {
+        thumbEl.src = thumb;
+        thumbEl.alt = item.title || '';
+        thumbEl.style.display = 'block';
+      } else {
+        thumbEl.style.display = 'none';
+      }
+
+      document.getElementById('readerDate').textContent = item.published_date || 'NEWS';
+      document.getElementById('readerTitle').textContent = item.title || '';
+      document.getElementById('readerBody').textContent = item.article_body || item.description || '';
+
+      const extEl = document.getElementById('readerExtLink');
+      const extUrl = safeUrl(item.external_link);
+      if (extUrl !== '#') {
+        extEl.href = extUrl;
+        extEl.style.display = 'inline-flex';
+      } else {
+        extEl.style.display = 'none';
+      }
+
+      document.getElementById('newsReaderModal').classList.add('open');
+    }
+
+    function closeNewsArticle() {
+      document.getElementById('newsReaderModal').classList.remove('open');
+    }
+
+    function renderBooks() {
+      const grid = document.getElementById('booksGrid');
+      if (!exploreBooks.length) {
+        grid.innerHTML = `<p style="color: var(--muted); font-size: 13px;">No books added yet.</p>`;
+        return;
+      }
+
+      grid.innerHTML = exploreBooks.map(b => {
+        const link = safeUrl(b.read_url);
+        return `
+          <div class="soft-card">
+            ${b.target_classes ? `<span class="badge">${escapeHtml(b.target_classes)}</span>` : ''}
+            <h3 style="font-size: 17px; margin-bottom: 5px;">${escapeHtml(b.title)}</h3>
+            <p style="font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 12px;">${escapeHtml(b.description)}</p>
+            <a class="btn btn-primary" style="padding: 8px 16px; font-size: 12px; text-decoration: none;" href="${link}" target="_blank" rel="noopener">Read →</a>
+          </div>
+        `;
+      }).join('');
+    }
+
     // Olympiad Hub
     async function loadOlympiadPosts() {
       const grid = document.getElementById('olympiadGrid');
@@ -2176,8 +3047,8 @@
           ${p.event_date ? `<p style="font-size: 11px; font-weight: 800; color: var(--primary); margin-bottom: 4px;">Date: ${escapeHtml(p.event_date)}</p>` : ''}
           <p style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">${escapeHtml(p.summary)}</p>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            ${p.external_link ? `<a class="btn btn-outline" style="font-size: 11px; padding: 6px 10px; text-decoration: none;" href="${escapeHtml(p.external_link)}" target="_blank" rel="noopener">Read Details →</a>` : ''}
-            ${isAdmin ? `<button class="btn btn-danger" style="font-size: 11px; padding: 6px 10px;" onclick="deleteOlympiadPost('${p.id}')">Delete</button>` : ''}
+            ${p.external_link ? `<a class="btn btn-outline" style="font-size: 11px; padding: 6px 10px; text-decoration: none;" href="${safeUrl(p.external_link)}" target="_blank" rel="noopener">Read Details →</a>` : ''}
+            ${isAdmin ? `<button class="btn btn-danger" style="font-size: 11px; padding: 6px 10px;" onclick="deleteOlympiadPost('${escapeHtml(p.id)}')">Delete</button>` : ''}
           </div>
         </div>
       `).join('');
