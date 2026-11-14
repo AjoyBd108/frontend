@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1591,7 +1589,7 @@
 
   <!-- SECTION: JAVASCRIPT -->
   <script>
-    const API_BASE = 'https://bacchakaccha.onrender.com';
+    const API_BASE = 'https://learnbee-jfcw.onrender.com';
 
     let siteConfig = {};
     let classThemes = [];
@@ -1622,34 +1620,50 @@
     // Server loading circle check
     function startWakeCheck() {
       const banner = document.getElementById('wakeBanner');
+      const startedAt = Date.now();
       let resolved = false;
+      let retryTimer = null;
 
       const slowShow = setTimeout(() => {
         if (!resolved) banner.style.display = 'block';
       }, 400);
 
+      function stopBanner() {
+        resolved = true;
+        clearTimeout(slowShow);
+        if (retryTimer) clearTimeout(retryTimer);
+        banner.style.display = 'none';
+      }
+
       async function ping() {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 12000);
         try {
-          const r = await fetch(`${API_BASE}/api/health`);
+          const r = await fetch(`${API_BASE}/api/health`, { signal: controller.signal });
           if (r.ok) {
-            resolved = true;
-            clearTimeout(slowShow);
-            banner.style.display = 'none';
+            stopBanner();
             loadSiteConfig();
             verifyCachedSession();
             return true;
           }
-        } catch {}
+        } catch {} finally {
+          clearTimeout(timer);
+        }
         return false;
       }
 
-      ping().then(ok => {
-        if (ok) return;
-        const retry = setInterval(async () => {
-          if (resolved || await ping()) clearInterval(retry);
-        }, 3000);
-        setTimeout(() => clearInterval(retry), 35000);
-      });
+      async function runCheck() {
+        if (resolved) return;
+        const ok = await ping();
+        if (ok || resolved) return;
+        if (Date.now() - startedAt >= 60000) {
+          stopBanner();
+          return;
+        }
+        retryTimer = setTimeout(runCheck, 3000);
+      }
+
+      runCheck();
     }
 
     // Pastel character SVGs (no emojis)
@@ -1721,8 +1735,10 @@
 
     // Load SQL site config
     async function loadSiteConfig() {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
       try {
-        const res = await fetch(`${API_BASE}/api/config`);
+        const res = await fetch(`${API_BASE}/api/config`, { signal: controller.signal });
         if (!res.ok) return;
         const data = await res.json();
         siteConfig = data.site_config || {};
@@ -1731,15 +1747,20 @@
         applyConfigToDOM();
         const user = getUser();
         if (user) applyClassTheme(user.class_level);
-      } catch {}
+      } catch {} finally {
+        clearTimeout(timer);
+      }
     }
 
     async function verifyCachedSession() {
       const token = getToken();
       if (!token) return;
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
       try {
         const res = await fetch(`${API_BASE}/api/auth/me`, {
-          headers: { 'Authorization': `Bearer ${token}` }
+          headers: { 'Authorization': `Bearer ${token}` },
+          signal: controller.signal
         });
         if (res.status === 401) {
           clearSession();
@@ -1754,7 +1775,9 @@
             updateUserUI();
           }
         }
-      } catch {}
+      } catch {} finally {
+        clearTimeout(timer);
+      }
     }
     // Navigation
     function switchView(name) {
@@ -1893,23 +1916,42 @@
       document.getElementById('chatHeaderTitle').textContent = `# class-${lvl}-study-room`;
     }
 
+    let classMsgsLoading = false;
+    let classMsgSending = false;
+
     async function loadClassMessages() {
       const feed = document.getElementById('classChatFeed');
       const token = getToken();
-      if (!token) return;
+      if (!token) {
+        feed.innerHTML = `<p style="color: var(--muted); font-size: 12px; text-align: center; margin-top: 24px;">Please log in to view class messages.</p>`;
+        return;
+      }
+      if (classMsgsLoading) return;
+      classMsgsLoading = true;
+
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
 
       try {
         const res = await fetch(`${API_BASE}/api/class/messages`, {
-          headers: { 'Authorization': `Bearer ${token}` }
+          headers: { 'Authorization': `Bearer ${token}` },
+          signal: controller.signal
         });
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          clearSession();
+          updateUserUI();
+          feed.innerHTML = `<p style="color: var(--danger); font-size: 12px; text-align: center;">Session expired. Please log in again.</p>`;
+          enforceAuthGate();
+          return;
+        }
         if (!res.ok) {
-          feed.innerHTML = `<p style="color: var(--danger); font-size: 12px; text-align: center;">${data.error || 'Could not load messages.'}</p>`;
+          feed.innerHTML = `<p style="color: var(--danger); font-size: 12px; text-align: center;">${escapeHtml(data.error || 'Could not load messages.')}</p>`;
           return;
         }
         const messages = data.messages || [];
         if (!messages.length) {
-          feed.innerHTML = `<p style="color: var(--muted); font-size: 12px; text-align: center; margin-top: 24px;">No messages yet in Class ${data.class_level}. Say hello!</p>`;
+          feed.innerHTML = `<p style="color: var(--muted); font-size: 12px; text-align: center; margin-top: 24px;">No messages yet in Class ${escapeHtml(data.class_level)}. Say hello!</p>`;
           return;
         }
         feed.innerHTML = messages.map(m => `
@@ -1926,16 +1968,32 @@
           </div>
         `).join('');
         feed.scrollTop = feed.scrollHeight;
-      } catch {
-        feed.innerHTML = `<p style="color: var(--danger); font-size: 12px; text-align: center;">Connection error.</p>`;
+      } catch (err) {
+        if (!feed.querySelector('.msg-row')) {
+          const msg = err && err.name === 'AbortError'
+            ? 'Server took too long. Tap Refresh.'
+            : 'Connection error.';
+          feed.innerHTML = `<p style="color: var(--danger); font-size: 12px; text-align: center;">${msg}</p>`;
+        }
+      } finally {
+        clearTimeout(timer);
+        classMsgsLoading = false;
       }
     }
 
-  async function sendClassMessage(e) {
+    async function sendClassMessage(e) {
       e.preventDefault();
+      if (classMsgSending) return;
       const input = document.getElementById('classMsgInput');
+      const btn = e.target.querySelector('button[type="submit"]');
       const text = input.value.trim();
       if (!text) return;
+
+      classMsgSending = true;
+      if (btn) btn.disabled = true;
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
+
       try {
         const res = await fetch(`${API_BASE}/api/class/messages`, {
           method: 'POST',
@@ -1943,7 +2001,8 @@
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getToken()}`
           },
-          body: JSON.stringify({ message: text })
+          body: JSON.stringify({ message: text }),
+          signal: controller.signal
         });
         const data = await res.json().catch(() => ({}));
         if (res.ok) {
@@ -1952,8 +2011,14 @@
         } else {
           alert(data.error || 'Could not send message.');
         }
-      } catch {
-        alert('Connection error. Please try again.');
+      } catch (err) {
+        alert(err && err.name === 'AbortError'
+          ? 'Server took too long. Please try again.'
+          : 'Connection error. Please try again.');
+      } finally {
+        clearTimeout(timer);
+        classMsgSending = false;
+        if (btn) btn.disabled = false;
       }
     }
 
@@ -1993,12 +2058,19 @@
       return p;
     }
 
+    let tutorBusy = false;
+
     async function sendTutorMessage(e, overrideText) {
       if (e) e.preventDefault();
+      if (tutorBusy) return;
       const input = document.getElementById('tutorInput');
       const text = (overrideText !== undefined ? overrideText : input.value).trim();
       const img = pendingImageDataUrl;
       if (!text && !img) return;
+
+      tutorBusy = true;
+      const barBtns = document.querySelectorAll('.tutor-bar button');
+      barBtns.forEach(b => { b.disabled = true; });
 
       appendTutorBubble('student', text || 'Please help me with this homework image.', img);
       if (overrideText === undefined) input.value = '';
@@ -2006,6 +2078,8 @@
 
       const replyNode = appendTutorBubble('ai', 'Thinking...');
       const user = getUser();
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 35000);
 
       try {
         const res = await fetch(`${API_BASE}/api/ai/tutor`, {
@@ -2019,12 +2093,21 @@
             imageDataUrl: img,
             sessionId: tutorSessionId,
             classLevel: user ? user.class_level : null
-          })
+          }),
+          signal: controller.signal
         });
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         replyNode.textContent = data.reply || data.error || 'Could not get an answer right now.';
-      } catch {
-        replyNode.textContent = 'Server is waking up or unreachable. Please try again.';
+      } catch (err) {
+        replyNode.textContent = err && err.name === 'AbortError'
+          ? 'Server took too long to reply. Please try again.'
+          : 'Server is waking up or unreachable. Please try again.';
+      } finally {
+        clearTimeout(timer);
+        tutorBusy = false;
+        barBtns.forEach(b => { b.disabled = false; });
+        const feed = document.getElementById('tutorFeed');
+        if (feed) feed.scrollTop = feed.scrollHeight;
       }
     }
 
@@ -2043,12 +2126,25 @@
     // Olympiad Hub
     async function loadOlympiadPosts() {
       const grid = document.getElementById('olympiadGrid');
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
       try {
-        const res = await fetch(`${API_BASE}/api/olympiad`);
-        olympiadPosts = await res.json();
+        const res = await fetch(`${API_BASE}/api/olympiad`, { signal: controller.signal });
+        const data = await res.json().catch(() => null);
+        if (!res.ok || !Array.isArray(data)) {
+          const errMsg = data && data.error ? escapeHtml(data.error) : 'Unable to load Olympiad updates.';
+          grid.innerHTML = `<p style="color: var(--danger); font-size: 13px;">${errMsg}</p>`;
+          return;
+        }
+        olympiadPosts = data;
         renderOlympiadPosts();
-      } catch {
-        grid.innerHTML = `<p style="color: var(--danger); font-size: 13px;">Unable to load Olympiad updates.</p>`;
+      } catch (err) {
+        const msg = err && err.name === 'AbortError'
+          ? 'Server took too long. Tap Refresh.'
+          : 'Unable to load Olympiad updates.';
+        grid.innerHTML = `<p style="color: var(--danger); font-size: 13px;">${msg}</p>`;
+      } finally {
+        clearTimeout(timer);
       }
     }
 
@@ -2089,6 +2185,10 @@
 
     async function createOlympiadPost(e) {
       e.preventDefault();
+      const btn = e.target.querySelector('button[type="submit"]');
+      if (btn && btn.disabled) return;
+      if (btn) btn.disabled = true;
+
       const payload = {
         title: document.getElementById('olyTitle').value.trim(),
         category: document.getElementById('olyCategory').value,
@@ -2097,24 +2197,56 @@
         summary: document.getElementById('olySummary').value.trim(),
         external_link: document.getElementById('olyLink').value.trim()
       };
-      const res = await fetch(`${API_BASE}/api/admin/olympiad`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
-        body: JSON.stringify(payload)
-      });
-      if (res.ok) {
-        e.target.reset();
-        loadOlympiadPosts();
+
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/olympiad`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok) {
+          e.target.reset();
+          loadOlympiadPosts();
+        } else {
+          alert(data.error || 'Could not publish update.');
+        }
+      } catch (err) {
+        alert(err && err.name === 'AbortError'
+          ? 'Server took too long. Please try again.'
+          : 'Connection error. Please try again.');
+      } finally {
+        clearTimeout(timer);
+        if (btn) btn.disabled = false;
       }
     }
 
     async function deleteOlympiadPost(id) {
-      const res = await fetch(`${API_BASE}/api/admin/olympiad`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
-        body: JSON.stringify({ id })
-      });
-      if (res.ok) loadOlympiadPosts();
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/olympiad`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+          body: JSON.stringify({ id }),
+          signal: controller.signal
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok) {
+          loadOlympiadPosts();
+        } else {
+          alert(data.error || 'Could not delete update.');
+        }
+      } catch (err) {
+        alert(err && err.name === 'AbortError'
+          ? 'Server took too long. Please try again.'
+          : 'Connection error. Please try again.');
+      } finally {
+        clearTimeout(timer);
+      }
     }
 
     // Auth Helpers & Exception Handling
