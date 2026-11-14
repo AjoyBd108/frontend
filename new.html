@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1567,19 +1565,19 @@
           </button>
         </div>
 
-        <!-- Explore Learning opens Olympiad Hub -->
-        <button type="button" class="explore-trigger" onclick="openOlympiadTab()">Explore Learning</button>
+        <!-- Explore Learning opens Let's explore -->
+        <button type="button" class="explore-trigger" onclick="switchView('learning')">Explore Learning</button>
       </div>
     </main>
 
-    <!-- SECTION: LEARNING VIEW (LET'S EXPLORE + OLYMPIAD HUB) -->
+    <!-- SECTION: LEARNING VIEW (LET'S EXPLORE) -->
     <main id="viewLearning" class="view">
 
-      <!-- Landing page: Let's explore + 3 zig-zag boxes + Olympiad Hub -->
+      <!-- Landing page: Let's explore + 3 zig-zag boxes -->
       <div id="exploreHubPage" class="explore-subpage active">
         <div class="explore-hero">
           <h1 class="explore-header">Let's explore</h1>
-          <p class="explore-sub">Pick a fun box or check Olympiad updates below</p>
+          <p class="explore-sub">Pick a treasure box to start learning</p>
         </div>
 
         <div class="zz-stack">
@@ -1639,41 +1637,7 @@
           </button>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-          <h2 style="font-size: 20px; font-weight: 800;">Olympiad Hub</h2>
-          <button class="btn btn-outline" style="padding: 6px 10px; font-size: 12px;" onclick="loadOlympiadPosts()">↻ Refresh</button>
         </div>
-
-        <div class="soft-card" id="adminOlympiadBox" style="display: none; margin-bottom: 14px; border-color: var(--primary);">
-          <h3 style="font-size: 15px; margin-bottom: 8px;">Admin: Publish Update</h3>
-          <form onsubmit="createOlympiadPost(event)">
-            <div class="form-group"><input class="input" id="olyTitle" placeholder="Title" required /></div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-              <select class="input" id="olyCategory">
-                <option value="Olympiad">Olympiad</option>
-                <option value="ECA">ECA</option>
-                <option value="News">Educational News</option>
-              </select>
-              <input class="input" id="olyDate" placeholder="Event Date" />
-            </div>
-            <div class="form-group"><input class="input" id="olyClasses" value="Class 1-5" placeholder="Target Classes" /></div>
-            <div class="form-group"><textarea class="input" id="olySummary" rows="2" placeholder="Summary..." required></textarea></div>
-            <div class="form-group"><input class="input" id="olyLink" placeholder="Reference Link (optional)" /></div>
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Publish Update</button>
-          </form>
-        </div>
-
-        <div class="filter-row" id="olympiadFilters">
-          <button class="pill active" onclick="filterOlympiad('All')">All</button>
-          <button class="pill" onclick="filterOlympiad('Olympiad')">Olympiad</button>
-          <button class="pill" onclick="filterOlympiad('ECA')">ECA</button>
-          <button class="pill" onclick="filterOlympiad('News')">News</button>
-        </div>
-
-        <div id="olympiadGrid" style="display: flex; flex-direction: column; gap: 10px;">
-          <p style="font-size: 13px; color: var(--muted);">Loading updates...</p>
-        </div>
-      </div>
 
       <!-- Sub-page 1: Videos -->
       <div id="exploreVideosPage" class="explore-subpage">
@@ -2122,8 +2086,6 @@
 
     let siteConfig = {};
     let classThemes = [];
-    let olympiadPosts = [];
-    let activeOlyFilter = 'All';
     let pendingViewAfterLogin = null;
     let pendingEmail = '';
     let pendingImageDataUrl = null;
@@ -2213,6 +2175,12 @@
       }
       if (n.includes('butterfly')) {
         return `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none"><ellipse cx="20" cy="24" rx="14" ry="11" transform="rotate(-20 20 24)" fill="#f7b7cb" stroke="#484a59" stroke-width="1.8"/><ellipse cx="44" cy="24" rx="14" ry="11" transform="rotate(20 44 24)" fill="#f7b7cb" stroke="#484a59" stroke-width="1.8"/><ellipse cx="22" cy="42" rx="10" ry="8" transform="rotate(15 22 42)" fill="#fad5e0" stroke="#484a59" stroke-width="1.8"/><ellipse cx="42" cy="42" rx="10" ry="8" transform="rotate(-15 42 42)" fill="#fad5e0" stroke="#484a59" stroke-width="1.8"/><rect x="30" y="16" width="4" height="32" rx="2" fill="#5e4b56"/></svg>`;
+      }
+      if (n.includes('koala')) {
+        return `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none"><circle cx="15" cy="24" r="10" fill="#a7adb8" stroke="#484a59" stroke-width="2"/><circle cx="49" cy="24" r="10" fill="#a7adb8" stroke="#484a59" stroke-width="2"/><circle cx="15" cy="25" r="5" fill="#f2ced6"/><circle cx="49" cy="25" r="5" fill="#f2ced6"/><ellipse cx="32" cy="36" rx="19" ry="17" fill="#b8bec9" stroke="#484a59" stroke-width="2"/><circle cx="24" cy="33" r="2.2" fill="#2d2e38"/><circle cx="40" cy="33" r="2.2" fill="#2d2e38"/><ellipse cx="32" cy="38" rx="4" ry="5.5" fill="#484a59"/><ellipse cx="21" cy="39" rx="3" ry="1.8" fill="#f4b6c2"/><ellipse cx="43" cy="39" rx="3" ry="1.8" fill="#f4b6c2"/></svg>`;
+      }
+      if (n.includes('blossom')) {
+        return `<svg width="${s}" height="${s}" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="14" r="10" fill="#fbcfe0" stroke="#484a59" stroke-width="1.8"/><circle cx="49" cy="26" r="10" fill="#fbcfe0" stroke="#484a59" stroke-width="1.8"/><circle cx="43" cy="46" r="10" fill="#fbcfe0" stroke="#484a59" stroke-width="1.8"/><circle cx="21" cy="46" r="10" fill="#fbcfe0" stroke="#484a59" stroke-width="1.8"/><circle cx="15" cy="26" r="10" fill="#fbcfe0" stroke="#484a59" stroke-width="1.8"/><circle cx="32" cy="32" r="10" fill="#ffe89c" stroke="#484a59" stroke-width="1.8"/><circle cx="28" cy="31" r="1.8" fill="#484a59"/><circle cx="36" cy="31" r="1.8" fill="#484a59"/><path d="M30 35 Q32 37 34 35" stroke="#484a59" stroke-width="1.6" stroke-linecap="round"/></svg>`;
       }
       return `<svg width="${s}" height="${Math.round(s * 0.8)}" viewBox="0 0 64 52" fill="none"><path d="M12 34 C8 20, 20 8, 36 8 C52 8, 58 22, 54 34 C50 42, 16 42, 12 34 Z" fill="#a87c64" stroke="#484a59" stroke-width="2"/><path d="M12 34 C14 22, 26 16, 38 22 C44 25, 48 32, 46 39 C38 43, 18 43, 12 34 Z" fill="#f9ead8" stroke="#484a59" stroke-width="1.8"/><circle cx="24" cy="27" r="2.2" fill="#2d2e38"/><circle cx="35" cy="27" r="2.2" fill="#2d2e38"/><ellipse cx="29.5" cy="31" rx="2.5" ry="1.8" fill="#484a59"/><ellipse cx="20" cy="31" rx="3" ry="1.6" fill="#f3b2b2"/><ellipse cx="39" cy="31" rx="3" ry="1.6" fill="#f3b2b2"/><circle cx="22" cy="41" r="3" fill="#f5dfd0" stroke="#484a59" stroke-width="1.5"/><circle cx="38" cy="41" r="3" fill="#f5dfd0" stroke="#484a59" stroke-width="1.5"/></svg>`;
     }
@@ -2322,7 +2290,6 @@
         document.getElementById('viewLearning').classList.add('active');
         document.getElementById('navLearning').classList.add('active');
         openExploreSection('hub');
-        loadOlympiadPosts();
       } else if (name === 'tutor') {
         document.getElementById('viewTutor').classList.add('active');
       } else if (name === 'myclass') {
@@ -2353,10 +2320,6 @@
       if (target) target.classList.add('active');
       if (section !== 'hub') loadExploreContent();
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function openOlympiadTab() {
-      switchView('learning');
     }
 
     function openTutorText() {
@@ -2391,7 +2354,6 @@
     function updateUserUI() {
       const user = getUser();
       const loggedIn = Boolean(user && getToken());
-      const adminBox = document.getElementById('adminOlympiadBox');
 
       if (loggedIn) {
         const nickname = user.nickname || user.character_name || user.name || 'Friend';
@@ -2412,7 +2374,6 @@
         document.getElementById('profCharName').textContent = user.character_name || 'Friend';
         document.getElementById('profSchool').textContent = user.school || '-';
         document.getElementById('profEmail').textContent = user.email || '-';
-        if (adminBox) adminBox.style.display = user.role === 'admin' ? 'block' : 'none';
       } else {
         applyClassTheme(1);
         document.getElementById('helloName').textContent = 'Hello, Friend!';
@@ -2422,7 +2383,6 @@
 
         document.getElementById('profileLoggedOutBox').style.display = 'block';
         document.getElementById('profileLoggedInBox').style.display = 'none';
-        if (adminBox) adminBox.style.display = 'none';
       }
     }
 
@@ -2822,10 +2782,15 @@
       });
       if (!types.some(t => t.toLowerCase() === activeVideoType.toLowerCase())) activeVideoType = 'All';
 
-      box.innerHTML = types.map(t => {
-        const active = t.toLowerCase() === activeVideoType.toLowerCase() ? ' active' : '';
-        return `<button type="button" class="pill${active}" onclick="selectVideoType('${escapeHtml(t)}')">${escapeHtml(t)}</button>`;
-      }).join('');
+      box.innerHTML = '';
+      types.forEach(t => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'pill' + (t.toLowerCase() === activeVideoType.toLowerCase() ? ' active' : '');
+        btn.textContent = t;
+        btn.onclick = () => selectVideoType(t);
+        box.appendChild(btn);
+      });
     }
 
     function selectVideoType(type) {
@@ -2992,132 +2957,6 @@
           </div>
         `;
       }).join('');
-    }
-
-    // Olympiad Hub
-    async function loadOlympiadPosts() {
-      const grid = document.getElementById('olympiadGrid');
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 15000);
-      try {
-        const res = await fetch(`${API_BASE}/api/olympiad`, { signal: controller.signal });
-        const data = await res.json().catch(() => null);
-        if (!res.ok || !Array.isArray(data)) {
-          const errMsg = data && data.error ? escapeHtml(data.error) : 'Unable to load Olympiad updates.';
-          grid.innerHTML = `<p style="color: var(--danger); font-size: 13px;">${errMsg}</p>`;
-          return;
-        }
-        olympiadPosts = data;
-        renderOlympiadPosts();
-      } catch (err) {
-        const msg = err && err.name === 'AbortError'
-          ? 'Server took too long. Tap Refresh.'
-          : 'Unable to load Olympiad updates.';
-        grid.innerHTML = `<p style="color: var(--danger); font-size: 13px;">${msg}</p>`;
-      } finally {
-        clearTimeout(timer);
-      }
-    }
-
-    function filterOlympiad(cat) {
-      activeOlyFilter = cat;
-      document.querySelectorAll('#olympiadFilters .pill').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.trim() === cat);
-      });
-      renderOlympiadPosts();
-    }
-
-    function renderOlympiadPosts() {
-      const grid = document.getElementById('olympiadGrid');
-      const user = getUser();
-      const isAdmin = user && user.role === 'admin';
-      const items = activeOlyFilter === 'All'
-        ? olympiadPosts
-        : olympiadPosts.filter(p => (p.category || '').toLowerCase() === activeOlyFilter.toLowerCase());
-
-      if (!items.length) {
-        grid.innerHTML = `<p style="color: var(--muted); font-size: 13px;">No updates posted in this category yet.</p>`;
-        return;
-      }
-
-      grid.innerHTML = items.map(p => `
-        <div class="soft-card">
-          <span class="badge">${escapeHtml(p.category || 'Olympiad')} • ${escapeHtml(p.target_classes || 'Class 1-5')}</span>
-          <h3 style="font-size: 16px; margin-bottom: 4px;">${escapeHtml(p.title)}</h3>
-          ${p.event_date ? `<p style="font-size: 11px; font-weight: 800; color: var(--primary); margin-bottom: 4px;">Date: ${escapeHtml(p.event_date)}</p>` : ''}
-          <p style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">${escapeHtml(p.summary)}</p>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            ${p.external_link ? `<a class="btn btn-outline" style="font-size: 11px; padding: 6px 10px; text-decoration: none;" href="${safeUrl(p.external_link)}" target="_blank" rel="noopener">Read Details →</a>` : ''}
-            ${isAdmin ? `<button class="btn btn-danger" style="font-size: 11px; padding: 6px 10px;" onclick="deleteOlympiadPost('${escapeHtml(p.id)}')">Delete</button>` : ''}
-          </div>
-        </div>
-      `).join('');
-    }
-
-    async function createOlympiadPost(e) {
-      e.preventDefault();
-      const btn = e.target.querySelector('button[type="submit"]');
-      if (btn && btn.disabled) return;
-      if (btn) btn.disabled = true;
-
-      const payload = {
-        title: document.getElementById('olyTitle').value.trim(),
-        category: document.getElementById('olyCategory').value,
-        event_date: document.getElementById('olyDate').value.trim(),
-        target_classes: document.getElementById('olyClasses').value.trim(),
-        summary: document.getElementById('olySummary').value.trim(),
-        external_link: document.getElementById('olyLink').value.trim()
-      };
-
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 15000);
-      try {
-        const res = await fetch(`${API_BASE}/api/admin/olympiad`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
-          body: JSON.stringify(payload),
-          signal: controller.signal
-        });
-        const data = await res.json().catch(() => ({}));
-        if (res.ok) {
-          e.target.reset();
-          loadOlympiadPosts();
-        } else {
-          alert(data.error || 'Could not publish update.');
-        }
-      } catch (err) {
-        alert(err && err.name === 'AbortError'
-          ? 'Server took too long. Please try again.'
-          : 'Connection error. Please try again.');
-      } finally {
-        clearTimeout(timer);
-        if (btn) btn.disabled = false;
-      }
-    }
-
-    async function deleteOlympiadPost(id) {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 15000);
-      try {
-        const res = await fetch(`${API_BASE}/api/admin/olympiad`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
-          body: JSON.stringify({ id }),
-          signal: controller.signal
-        });
-        const data = await res.json().catch(() => ({}));
-        if (res.ok) {
-          loadOlympiadPosts();
-        } else {
-          alert(data.error || 'Could not delete update.');
-        }
-      } catch (err) {
-        alert(err && err.name === 'AbortError'
-          ? 'Server took too long. Please try again.'
-          : 'Connection error. Please try again.');
-      } finally {
-        clearTimeout(timer);
-      }
     }
 
     // Auth Helpers & Exception Handling
