@@ -54,23 +54,27 @@
       box-shadow: 0 0 36px rgba(30, 24, 14, 0.12);
     }
 
-    /* Render 30s wake timer */
+  /* Server loading circle */
     #wakeBanner {
       display: none;
       position: fixed;
-      top: 0;
+      top: 14px;
       left: 50%;
       transform: translateX(-50%);
-      width: 100%;
-      max-width: 440px;
-      z-index: 60;
-      background: #fef3c7;
-      color: #92400e;
-      border-bottom: 1px solid #fde68a;
-      text-align: center;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 700;
+      z-index: 120;
+      pointer-events: none;
+    }
+
+    .wake-circle {
+      display: block;
+      width: 28px;
+      height: 28px;
+      border: 3px solid rgba(91, 77, 240, 0.22);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      background: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
     }
 
     .view {
@@ -81,8 +85,9 @@
     }
     .view.active { display: block; }
 
-    /* Lock Home to one screen with no scroll */
+  /* Lock Home to one screen with no scroll */
     #viewHome.active {
+      height: 100vh;
       height: 100dvh;
       overflow: hidden;
       display: flex;
@@ -673,6 +678,7 @@
     .modal {
       width: 100%;
       max-width: 440px;
+      height: 100vh;
       height: 100dvh;
       background: #e6eff1;
       display: flex;
@@ -971,9 +977,9 @@
 <body>
   <div class="app-shell">
 
-    <!-- SECTION: RENDER 30S TIMER BANNER -->
-    <div id="wakeBanner">
-      Waking up LearnBee server (<span id="wakeSeconds">30</span>s)...
+   <!-- SECTION: SERVER LOADING CIRCLE -->
+    <div id="wakeBanner" aria-label="Loading server">
+      <span class="wake-circle"></span>
     </div>
 
     <!-- SECTION: HOME VIEW -->
@@ -1613,34 +1619,37 @@
       localStorage.removeItem('shikkha_user');
     }
 
-    // Render 30s wake timer
+    // Server loading circle check
     function startWakeCheck() {
       const banner = document.getElementById('wakeBanner');
-      const secEl = document.getElementById('wakeSeconds');
-      let remaining = 30;
       let resolved = false;
-
-      const timer = setInterval(() => {
-        if (resolved) return clearInterval(timer);
-        remaining = Math.max(0, remaining - 1);
-        secEl.textContent = remaining;
-        if (remaining === 0) clearInterval(timer);
-      }, 1000);
 
       const slowShow = setTimeout(() => {
         if (!resolved) banner.style.display = 'block';
-      }, 1200);
+      }, 400);
 
-      fetch(`${API_BASE}/api/health`)
-        .then(r => {
+      async function ping() {
+        try {
+          const r = await fetch(`${API_BASE}/api/health`);
           if (r.ok) {
             resolved = true;
             clearTimeout(slowShow);
-            clearInterval(timer);
             banner.style.display = 'none';
+            loadSiteConfig();
+            verifyCachedSession();
+            return true;
           }
-        })
-        .catch(() => { banner.style.display = 'block'; });
+        } catch {}
+        return false;
+      }
+
+      ping().then(ok => {
+        if (ok) return;
+        const retry = setInterval(async () => {
+          if (resolved || await ping()) clearInterval(retry);
+        }, 3000);
+        setTimeout(() => clearInterval(retry), 35000);
+      });
     }
 
     // Pastel character SVGs (no emojis)
@@ -1665,6 +1674,51 @@
       return `<svg width="${s}" height="${Math.round(s * 0.8)}" viewBox="0 0 64 52" fill="none"><path d="M12 34 C8 20, 20 8, 36 8 C52 8, 58 22, 54 34 C50 42, 16 42, 12 34 Z" fill="#a87c64" stroke="#484a59" stroke-width="2"/><path d="M12 34 C14 22, 26 16, 38 22 C44 25, 48 32, 46 39 C38 43, 18 43, 12 34 Z" fill="#f9ead8" stroke="#484a59" stroke-width="1.8"/><circle cx="24" cy="27" r="2.2" fill="#2d2e38"/><circle cx="35" cy="27" r="2.2" fill="#2d2e38"/><ellipse cx="29.5" cy="31" rx="2.5" ry="1.8" fill="#484a59"/><ellipse cx="20" cy="31" rx="3" ry="1.6" fill="#f3b2b2"/><ellipse cx="39" cy="31" rx="3" ry="1.6" fill="#f3b2b2"/><circle cx="22" cy="41" r="3" fill="#f5dfd0" stroke="#484a59" stroke-width="1.5"/><circle cx="38" cy="41" r="3" fill="#f5dfd0" stroke="#484a59" stroke-width="1.5"/></svg>`;
     }
 
+    const DEFAULT_CLASS_THEMES = {
+      1: { theme_color: '#e06d53', soft_bg: '#fff0eb', bg_top: '#fbf6eb', bg_mid: '#fae6d1', bg_bot: '#f6cca2', nav_bg: '#e6dfd0' },
+      2: { theme_color: '#2e8b57', soft_bg: '#eaf8f0', bg_top: '#f4fbf5', bg_mid: '#dff2e4', bg_bot: '#bfe4cb', nav_bg: '#d3e6d6' },
+      3: { theme_color: '#3b82f6', soft_bg: '#eff6ff', bg_top: '#f4f8fd', bg_mid: '#e0ecfb', bg_bot: '#bfd8fa', nav_bg: '#d5e2f2' },
+      4: { theme_color: '#8b5cf6', soft_bg: '#f3effe', bg_top: '#f8f5fd', bg_mid: '#ece4fb', bg_bot: '#d5c4fa', nav_bg: '#e1daf0' },
+      5: { theme_color: '#d97706', soft_bg: '#fef7e6', bg_top: '#fbf6eb', bg_mid: '#faecd1', bg_bot: '#f6d59a', nav_bg: '#d9e4cb' }
+    };
+
+    function applyConfigToDOM() {
+      if (siteConfig.about_mission) document.getElementById('aboutMissionText').textContent = siteConfig.about_mission;
+      if (siteConfig.welcome_label) document.getElementById('welcomeLabel').textContent = siteConfig.welcome_label;
+      if (siteConfig.space_subtitle) document.getElementById('homeSpaceSub').textContent = siteConfig.space_subtitle;
+    }
+
+    function applyClassTheme(classLevel) {
+      const lvl = Number(classLevel) || 1;
+      const fallback = DEFAULT_CLASS_THEMES[lvl] || DEFAULT_CLASS_THEMES[1];
+      const dbTheme = classThemes.find(t => Number(t.class_level) === lvl) || {};
+      const color = dbTheme.theme_color || fallback.theme_color;
+      const soft = dbTheme.soft_bg || fallback.soft_bg;
+
+      const root = document.documentElement.style;
+      root.setProperty('--class-color', color);
+      root.setProperty('--class-soft', soft);
+      root.setProperty('--primary', color);
+      root.setProperty('--primary-dark', color);
+      root.setProperty('--bg-top', fallback.bg_top);
+      root.setProperty('--bg-mid', fallback.bg_mid);
+      root.setProperty('--bg-bot', fallback.bg_bot);
+      root.setProperty('--nav-bg', fallback.nav_bg);
+
+      const spaceCard = document.querySelector('.space-card');
+      if (spaceCard) spaceCard.style.borderColor = color;
+    }
+
+    function restoreCachedConfig() {
+      try {
+        const cached = JSON.parse(localStorage.getItem('shikkha_config'));
+        if (!cached) return;
+        siteConfig = cached.site_config || {};
+        classThemes = cached.class_themes || [];
+        applyConfigToDOM();
+      } catch {}
+    }
+
     // Load SQL site config
     async function loadSiteConfig() {
       try {
@@ -1673,10 +1727,33 @@
         const data = await res.json();
         siteConfig = data.site_config || {};
         classThemes = data.class_themes || [];
+        localStorage.setItem('shikkha_config', JSON.stringify({ site_config: siteConfig, class_themes: classThemes }));
+        applyConfigToDOM();
+        const user = getUser();
+        if (user) applyClassTheme(user.class_level);
+      } catch {}
+    }
 
-        if (siteConfig.about_mission) document.getElementById('aboutMissionText').textContent = siteConfig.about_mission;
-        if (siteConfig.welcome_label) document.getElementById('welcomeLabel').textContent = siteConfig.welcome_label;
-        if (siteConfig.space_subtitle) document.getElementById('homeSpaceSub').textContent = siteConfig.space_subtitle;
+    async function verifyCachedSession() {
+      const token = getToken();
+      if (!token) return;
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.status === 401) {
+          clearSession();
+          updateUserUI();
+          enforceAuthGate();
+          return;
+        }
+        if (res.ok) {
+          const data = await res.json();
+          if (data.user) {
+            saveSession(token, data.user);
+            updateUserUI();
+          }
+        }
       } catch {}
     }
     // Navigation
@@ -1750,13 +1827,14 @@
       switchView('myclass');
     }
 
-    function updateUserUI() {
+   function updateUserUI() {
       const user = getUser();
       const loggedIn = Boolean(user && getToken());
       const adminBox = document.getElementById('adminOlympiadBox');
 
       if (loggedIn) {
         const displayName = user.name || 'Friend';
+        applyClassTheme(user.class_level);
         document.getElementById('helloName').textContent = `Hello, ${displayName}!`;
         document.getElementById('homeAvatarEmoji').innerHTML = getCharacterSvg(user.character_name, 60);
         document.getElementById('homeAvatarName').textContent = displayName.toUpperCase();
@@ -1772,6 +1850,7 @@
         document.getElementById('profEmail').textContent = user.email || '-';
         if (adminBox) adminBox.style.display = user.role === 'admin' ? 'block' : 'none';
       } else {
+        applyClassTheme(1);
         document.getElementById('helloName').textContent = 'Hello, Friend!';
         document.getElementById('homeAvatarEmoji').innerHTML = getCharacterSvg('Hedgehog', 60);
         document.getElementById('homeAvatarName').textContent = 'LOG IN';
@@ -1783,10 +1862,18 @@
       }
     }
 
+    function enforceAuthGate() {
+      const loggedIn = Boolean(getUser() && getToken());
+      const closeBtn = document.querySelector('#authModal .modal-close');
+      if (closeBtn) closeBtn.style.display = loggedIn ? 'block' : 'none';
+      if (!loggedIn) openAuthModal('login');
+    }
+
     function logout() {
       clearSession();
       updateUserUI();
       switchView('home');
+      enforceAuthGate();
     }
 
     // Class Community
@@ -1844,12 +1931,11 @@
       }
     }
 
-    async function sendClassMessage(e) {
+  async function sendClassMessage(e) {
       e.preventDefault();
       const input = document.getElementById('classMsgInput');
       const text = input.value.trim();
       if (!text) return;
-      input.value = '';
       try {
         const res = await fetch(`${API_BASE}/api/class/messages`, {
           method: 'POST',
@@ -1859,8 +1945,16 @@
           },
           body: JSON.stringify({ message: text })
         });
-        if (res.ok) loadClassMessages();
-      } catch {}
+        const data = await res.json().catch(() => ({}));
+        if (res.ok) {
+          input.value = '';
+          loadClassMessages();
+        } else {
+          alert(data.error || 'Could not send message.');
+        }
+      } catch {
+        alert('Connection error. Please try again.');
+      }
     }
 
     // AI Tutor
@@ -2106,12 +2200,15 @@
 
     // Auth Modal Controls
     function openAuthModal(tab) {
+      const closeBtn = document.querySelector('#authModal .modal-close');
+      if (closeBtn) closeBtn.style.display = (getUser() && getToken()) ? 'block' : 'none';
       document.getElementById('authModal').style.display = 'flex';
       showAuthTab(tab || 'login');
     }
 
     function closeAuthModal() {
       if (authBusy) return;
+      if (!getUser() || !getToken()) return;
       clearAuthErrors();
       document.getElementById('authModal').style.display = 'none';
       pendingViewAfterLogin = null;
@@ -2300,9 +2397,10 @@
     }
 
     // Init
-    startWakeCheck();
+    restoreCachedConfig();
     updateUserUI();
-    loadSiteConfig();
+    enforceAuthGate();
+    startWakeCheck();
   </script>
 </body>
 </html>
